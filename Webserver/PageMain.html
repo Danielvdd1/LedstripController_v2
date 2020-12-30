@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Led strip</title>
+  <link rel='icon shortcut' type='image/png' href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMjHxIGmVAAACyElEQVQ4T32R60vTURjHBxb0T0SQkNTmrUzdvKZZWo3Ssla6Iu1monazIlFLX1iaRnaPmtosMcoudDMlSGPSC52KaZYVbpk6NTdzTn3z6beDCpL2hQcO5/D9PM/zPbK5lFq7mfSGWHp7+xgeHubs1ziyO+OZep5fWt1a98Mv1ZjNZgYHhxix2bDbxxgfH2dycpLcH9r5IbGXQ0isjCTlTbTUuZffv4clsx3HlNlZhaaTnOuKJ6Nl578gzfU1JFRE0tHRQU/PL4akCZyAiYmJGYCzsj/Hkdm+azagoaGB7cUhaHURtLV9wmz6iaW/H5vVhsPhmAXJaNFwplkj7qfsMtmH+npiCoLRXFtDU2MT3d3dYg2LxYLVamV0dHQGdMIQKwJ2noW5XK/n7dsaNuX4S5AgYi8H09Rk5FtXFyaTSUAGBwawSYEmv1KTUq0m7V20CLZPaiIrLSnlSVUVEemriMr0Q52rYst5JQaDAaPRKDJxwrQlESKj/Y+iOPhkA2NjY/RLawqAKtGdwAMKgpM9CU31IuyoN+HHV7LulA9RGb5sPOvP5rwAtl0KFWvG3QlnT9l68d0SoARlogK/3XL89shR7lWgTFAQIN0F7pdqn4IgJzzJg/Bj3kRKQHWukpiLQVJejcgCDnig2ueBn1bOao0cnx1uuKtdeV2ag6HqIq3VxbTXXsU33g1VglyAgw95EnbESwBFkAFSR++ty1jiu5grWcm80GVTmHWS74bbDLTeoyj7NP3GUr68v4FXjCv+2hViMmGe1opIVzKT4qirzMP8UUegQo7911PGh16iki9ncqSGCWu19HYXedTS2eZpFWclUV2WS+ubYhYtWMCfzgpGfjxkoYsLjoHn2H8+xtJ8b27ztB4UneLZrSzeV+QJUJc0do/Uta9Rx/e6m/83T0ufn0J5fhr6/FTKC9K4X5CK/kLKHGaZ7C/+EiOzvseUTgAAAABJRU5ErkJggg=="/>
+  <meta name="theme-color" content="#4286f4">
+
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <link href='http://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+  <!--<link href='http://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900italic,900' rel='stylesheet' type='text/css'>-->
+  <link rel="stylesheet" href="PageMain.css">
+  <!--
+	  Author: Daniël van der Drift
+
+	  Usage:
+	  /sendrgbw?id=(1/2)&r=(0-255)&g=(0-255)&b=(0-255)&w=(0-255)
+	  /sendw?id=(1)&w=(0/1)
+	  /sendanim?anim=(1-5)
+	  /onoff
+  -->
+</head>
+
+<body>
+  <h1>Ledstrip controller</h1>
+  <center>
+    <div id="wrap">
+      <div id="item">
+        <p>Ledstrip1</p>
+        <table id="t1" class="table1">
+          <tr>
+            <th>
+              <input id="b00" class='notselected' type='button' onclick='SendRGBW(1,255,0,0,0)' style='background: #f00;' value="Red">
+            </th>
+            <th>
+              <input id="b01" class='notselected' type='button' onclick='SendRGBW(1,0,255,0,0)' style='background: #0f0;' value="Green">
+            </th>
+            <th>
+              <input id="b02" class='notselected' type='button' onclick='SendRGBW(1,0,0,255,0)' style='background: #00f;' value="Blue">
+            </th>
+          </tr>
+          <tr>
+            <td>
+              <input id="b03" class='notselected' type='button' onclick='SendRGBW(1,0,0,0,255)' value="White">
+            </td>
+            <td>
+              <input id="b04" class='notselected' type='button' onclick='SendRGBW(1,0,0,0,0)' value="Black">
+            </td>
+            <td>
+              <input id="b05" class='notselected' type='button' onclick='location.href="/colorpicker?id=1"' style='font-size: 12px;' value="Pick color">
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div id="item">
+        <p>Ledstrip2</p>
+        <table id="t2" class="table1">
+          <tr>
+            <th>
+              <input id="b10" class='notselected' type='button' onclick='SendRGBW(2,255,0,0,0)' style='background: #f00;' value="Red">
+            </th>
+            <th>
+              <input id="b11" class='notselected' type='button' onclick='SendRGBW(2,0,255,0,0)' style='background: #0f0;' value="Green">
+            </th>
+            <th>
+              <input id="b12" class='notselected' type='button' onclick='SendRGBW(2,0,0,255,0)' style='background: #00f;' value="Blue">
+            </th>
+          </tr>
+          <tr>
+            <td>
+              <input id="b13" class='notselected' type='button' onclick='SendRGBW(2,0,0,0,255)' value="White">
+            </td>
+            <td>
+              <input id="b14" class='notselected' type='button' onclick='SendRGBW(2,0,0,0,0)' value="Black">
+            </td>
+            <td>
+              <input id="b15" class='notselected' type='button' onclick='location.href="/colorpicker?id=2"' style='font-size: 12px;' value="Pick color">
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div id="item">
+        <p>Animations</p>
+        <table id="t3" class="table1">
+          <tr>
+            <th>
+              <input id="b20" class='notselected' type='button' onclick='SendAnim(1)' style='font-size: 12px;' value="Nothing">
+            </th>
+            <th>
+              <input id="b21" class='notselected' type='button' onclick='SendAnim(2)' style='font-size: 12px;' value="Rainbow">
+            </th>
+            <th>
+              <input id="b22" class='notselected' type='button' onclick='SendAnim(3)' style='font-size: 12px;' value="Random">
+            </th>
+          </tr>
+          <tr>
+            <td>
+              <input id="b23" class='notselected' type='button' onclick='SendAnim(4)' style='font-size: 12px;' value="Random smooth">
+            </td>
+            <td>
+              <input id="b24" class='notselected' type='button' onclick='SendAnim(5)' style='font-size: 12px;' value="Random blink">
+            </td>
+            <td>
+              <input id="b25" class='notselected' type='button' onclick='location.href="/sendanim"' style='font-size: 12px;' value="Speed selection" disabled>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <br>
+  
+    <table id="t3" class="table2">
+      <tr>
+        <th>
+          <p>Schuineluik</p>
+          <label class="switch">
+            <input id="switch0" type="checkbox">
+            <span class="slider"></span>
+          </label>
+        </th>
+        <th>
+          <p>Lamp2</p>
+          <label class="switch">
+            <input id="switch1" type="checkbox" disabled>
+            <span class="slider"></span>
+          </label>
+        </th>
+        <th>
+          <p>Lamp3</p>
+          <label class="switch">
+            <input id="switch2" type="checkbox" disabled>
+            <span class="slider"></span>
+          </label>
+        </th>
+      </tr>
+    </table>
+    <br>
+  
+    <input id='buttononoff' type='button' onclick='SendOnOff()' value="Off">
+  </center>
+  <script src="PageMain.js"></script>
+</body>
+</html>

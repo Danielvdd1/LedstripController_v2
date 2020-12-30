@@ -1,0 +1,41 @@
+#include <iostream>
+#include <vector>
+#include <list>
+
+namespace st = std;
+
+#include "ledstrip_light.hpp"
+namespace ll = ledstripLights;
+
+
+
+int main()
+{
+	st::list<ll::LedstripRGB> ledstripsRGB;
+	st::list<ll::LedstripRGBW> ledstripsRGBW;
+	st::list<ll::LedstripW> ledstripsW;
+	st::list<ll::LedstripRemote> ledstripsRemote;
+	st::list<ll::Ledstrip*> ledstrips;
+
+	ll::LedstripRGB ledstrip1 = ll::LedstripRGB("Bureau", 1, 2, 3);
+	ledstripsRGB.push_back(ledstrip1);
+	ledstrips.push_back(&ledstrip1);
+
+	
+	for(auto ledstrip: ledstrips){
+		st::string test = ledstrip->getInfo();
+		st::cout << test << '\n';
+	}
+	st::cout << '\n';
+
+	ledstrip1.setValue(10,10,20);
+
+	for(auto ledstrip: ledstrips){
+		st::string test = ledstrip->getInfo();
+		st::cout << test << '\n';
+	}
+	st::cout << '\n';
+	
+
+	return 0;
+}
