@@ -10,10 +10,30 @@ class LedstripW;
 class LedstripRemote;
 
 
-class GPIOOut{
+// class GPIO_Out{
+
+//   public:
+//     GPIO_Out(int pin);
+// 	virtual void setValue(int value) = 0;
+// 	virtual int getValue() = 0;
+// };
+
+class GPIO_Out_PWMServoDriver{
 
   public:
-    GPIOOut(int pin);
+    GPIO_Out_PWMServoDriver(int pin);
+	void setValue(int value);
+	int getValue();
+  
+  protected:
+    int pin;
+    int value;
+};
+
+class GPIO_Out_Pin{
+
+  public:
+    GPIO_Out_Pin(int pin);
 	void setValue(int value);
 	int getValue();
   
@@ -25,21 +45,21 @@ class GPIOOut{
 class Ledstrip{
 
   public:
-    Ledstrip(String);
+    Ledstrip(String name);
 	virtual String getInfo() = 0;
     virtual void turnOn() = 0;
     virtual void turnOff() = 0;
 
   protected:
     String name;
-    int brightness;
+    //int brightness;
 };
 
 
 class LedstripRGB: public Ledstrip{
 
   public:
-    LedstripRGB(String name, int pinR, int pinG, int pinB);
+    LedstripRGB(String name, Adafruit_PWMServoDriver &pwmDriver, int pinR, int pinG, int pinB);
 	String getInfo();
     void turnOn();
     void turnOff();
@@ -50,7 +70,8 @@ class LedstripRGB: public Ledstrip{
 	
 
   protected:
-	GPIOOut gpio[3];
+	Adafruit_PWMServoDriver &pwmDriver;
+	GPIO_Out_PWMServoDriver gpio[3];
 	//int animType;
 	//int animSpeed;
 };
@@ -58,7 +79,7 @@ class LedstripRGB: public Ledstrip{
 class LedstripRGBW: public Ledstrip{
 
   public:
-    LedstripRGBW(String name, int pinR, int pinG, int pinB, int pinW);
+    LedstripRGBW(String name, Adafruit_PWMServoDriver &pwmDriver, int pinR, int pinG, int pinB, int pinW);
 	String getInfo();
     void turnOn();
     void turnOff();
@@ -69,7 +90,8 @@ class LedstripRGBW: public Ledstrip{
 
 	
   protected:
-  	GPIOOut gpio[4];
+	Adafruit_PWMServoDriver &pwmDriver;
+  	GPIO_Out_PWMServoDriver gpio[4];
 	//int animType;
 	//int animSpeed;
 };
@@ -77,7 +99,7 @@ class LedstripRGBW: public Ledstrip{
 class LedstripW: public Ledstrip{
 
   public:
-    LedstripW(String name, int pinW, bool binary = false);
+    LedstripW(String name, Adafruit_PWMServoDriver &pwmDriver, int pinW, bool binary = false);
 	String getInfo();
     void turnOn();
     void turnOff();
@@ -85,7 +107,8 @@ class LedstripW: public Ledstrip{
 
   
   protected:
-	GPIOOut gpio;
+	Adafruit_PWMServoDriver &pwmDriver;
+	GPIO_Out_PWMServoDriver gpio;
     bool binary;
 };
 

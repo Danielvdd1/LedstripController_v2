@@ -1,76 +1,75 @@
 #include <Arduino.h> // Required for Visual Studio Code
+#include <Wire.h>
+#include <Adafruit_PWMServoDriver.h>
 
 #include "ledstrip_light.hpp"
 
 namespace ledstripLights {
 
+Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
+
 
 //st::cout << "Debug" << '\n'; // Remove
 
-// ====== LedstripRGB definitions
+// ====== GPIO definitions
 
-GPIOOut::GPIOOut(int pin): pin(pin), value(0)
+GPIO_Out_PWMServoDriver::GPIO_Out_PWMServoDriver(int pin): pin(pin), value(0)
 {
-	//pinMode(pin, OUTPUT);
+	
 }
 
-void GPIOOut::setValue(int value){
+void GPIO_Out_PWMServoDriver::setValue(int value){
   	this->value = value;
+	pwm.setPWM(pin, 0, value * 16);
+	#ifdef ESP8266 // If this is slow: Move to Ledstrip#.setValue()
+      yield(); // take a breather, required for ESP8266
+    #endif
 }
 
-int GPIOOut::getValue(){
+int GPIO_Out_PWMServoDriver::getValue(){
 	//value = digitalRead(pin);
 	return value;
 }
 
+/*
+GPIO_Out_Pin::GPIO_Out_Pin(int pin): pin(pin), value(0)
+{
+	pinMode(pin, OUTPUT);
+}
+
+void GPIO_Out_Pin::setValue(int value){
+  	this->value = value;
+	analogWrite(pin, value);
+}
+
+int GPIO_Out_Pin::getValue(){
+	return value;
+}
+*/
+
 // ====== Ledstrip definitions
 
-Ledstrip::Ledstrip(String name): name(name), brightness(255)
+Ledstrip::Ledstrip(String name): name(name)
 {
 }
 
 // ====== LedstripRGB definitions
 
-LedstripRGB::LedstripRGB(String name, int pinR, int pinG, int pinB): Ledstrip(name), gpio{GPIOOut(pinR), GPIOOut(pinG), GPIOOut(pinB)}
+LedstripRGB::LedstripRGB(String name, Adafruit_PWMServoDriver &pwmDriver, int pinR, int pinG, int pinB): Ledstrip(name), pwmDriver(pwmDriver), gpio{GPIO_Out_PWMServoDriver(pinR), GPIO_Out_PWMServoDriver(pinG), GPIO_Out_PWMServoDriver(pinB)}
 {
 }
 
 String LedstripRGB::getInfo(){
-	String result = "";
-
-	result += "LedstripRGB: ";
-	result += name;
-	result += '\n';
-
-	result += "PinR: ";
-	result += String(gpio[0].getValue());
-	result += "\n";
-	result += "PinG: ";
-	result += String(gpio[1].getValue());
-	result += "\n";
-	result += "PinB: ";
-	result += String(gpio[2].getValue());
-
-	/*
-	for (int i = 3 - 1; i >= 0; i--)
-	{
-		result += "Pin";
-		result += i;
-		result += ": ";
-		result += gpio[i].getValue();
-		result += "\n";
-	}
-	*/
-
-	return result;
+	String json = "{\"name\": \"" + name + "\", \"r\": " + String(gpio[0].getValue()) + ", \"g\": " + String(gpio[1].getValue()) + ", \"b\": " + String(gpio[2].getValue()) + "}";
+	return json;
 }
 
 void LedstripRGB::turnOn(){
-  //TODO:
+  	setValue(255, 255, 255);
 }
 
 void LedstripRGB::turnOff(){
-  //TODO:
+  	setValue(0, 0, 0);
 }
 
 void LedstripRGB::setValue(int valR, int valG, int valB){
@@ -81,38 +80,21 @@ void LedstripRGB::setValue(int valR, int valG, int valB){
 
 // ====== LedstripRGBW definitions
 
-LedstripRGBW::LedstripRGBW(String name, int pinR, int pinG, int pinB, int pinW): Ledstrip(name), gpio{GPIOOut(pinR), GPIOOut(pinG), GPIOOut(pinB), GPIOOut(pinW)}
+LedstripRGBW::LedstripRGBW(String name, Adafruit_PWMServoDriver &pwmDriver, int pinR, int pinG, int pinB, int pinW): Ledstrip(name), pwmDriver(pwmDriver), gpio{GPIO_Out_PWMServoDriver(pinR), GPIO_Out_PWMServoDriver(pinG), GPIO_Out_PWMServoDriver(pinB), GPIO_Out_PWMServoDriver(pinW)}
 {
 }
 
 String LedstripRGBW::getInfo(){
-	String result = "";
-
-	result += "LedstripRGBW: ";
-	result += name;
-	result += '\n';
-
-	result += "PinR: ";
-	result += String(gpio[0].getValue());
-	result += "\n";
-	result += "PinG: ";
-	result += String(gpio[1].getValue());
-	result += "\n";
-	result += "PinB: ";
-	result += String(gpio[2].getValue());
-	result += "\n";
-	result += "PinW: ";
-	result += String(gpio[3].getValue());
-
-	return result;
+	String json = "{\"name\": \"" + name + "\", \"r\": " + String(gpio[0].getValue()) + ", \"g\": " + String(gpio[1].getValue()) + ", \"b\": " + String(gpio[2].getValue()) + ", \"w\": " + String(gpio[3].getValue()) + "}";
+	return json;
 }
 
 void LedstripRGBW::turnOn(){
-  //TODO:
+  	setValue(255, 255, 255, 255);
 }
 
 void LedstripRGBW::turnOff(){
-  //TODO:
+  	setValue(0, 0, 0, 0);
 }
 
 void LedstripRGBW::setValue(int valR, int valG, int valB, int valW){
@@ -124,29 +106,21 @@ void LedstripRGBW::setValue(int valR, int valG, int valB, int valW){
 
 // ====== LedstripW definitions
 
-LedstripW::LedstripW(String name, int pinW, bool binary): Ledstrip(name), gpio(GPIOOut(pinW)), binary(binary)
+LedstripW::LedstripW(String name, Adafruit_PWMServoDriver &pwmDriver, int pinW, bool binary): Ledstrip(name), pwmDriver(pwmDriver), gpio(GPIO_Out_PWMServoDriver(pinW)), binary(binary)
 {
 }
 
 String LedstripW::getInfo(){
-	String result = "";
-
-	result += "LedstripW: ";
-	result += name;
-	result += '\n';
-
-	result += "PinW: ";
-	result += String(gpio.getValue());
-
-	return result;
+	String json = "{\"name\": \"" + name + "\", \"w\": " + String(gpio.getValue()) + "}";
+	return json;
 }
 
 void LedstripW::turnOn(){
-  //TODO:
+  	setValue(255);
 }
 
 void LedstripW::turnOff(){
-  //TODO:
+  	setValue(0);
 }
 
 void LedstripW::setValue(int valW){
@@ -160,25 +134,20 @@ LedstripRemote::LedstripRemote(String name, String urlOn, String urlOff): Ledstr
 }
 
 String LedstripRemote::getInfo(){
-	String result = "";
-
-	result += "LedstripRemote: ";
-	result += name;
-
-	//result += "PinW: ";
-	//result += st::to_string(gpio.getValue());
-
-	return result;
+	//String json = "{\"name\": " + name + ", \"w\": " + String(gpio.getValue()) + "}"; // Put url requests in gpio object.
+	//return json;
+	String json = "{\"name\": \"" + name + "\"}";
+	return json;
 }
 
 void LedstripRemote::turnOn(){
-  //TODO:
-  // HTTP request to urlOn
+  	//TODO:
+  	// HTTP request to urlOn
 }
 
 void LedstripRemote::turnOff(){
-  //TODO:
-  // HTTP request to urlOff
+  	//TODO:
+  	// HTTP request to urlOff
 }
 
 void LedstripRemote::setValue(int valW){
