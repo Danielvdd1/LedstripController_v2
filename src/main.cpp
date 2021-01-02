@@ -68,17 +68,14 @@ void HandlePageSunriseHTML();
 void HandlePageSunriseCSS();
 void HandlePageSunriseJS();
 
-void HandleRGBW();
-void HandleW();
-void HandleAnim();
-void HandleOnOff();
-void HandleSunrise();
-
 void HandleDebug();
 void HandleTest();
 
-void HandleOTA();
-void OTA();
+void HandleOnOff();
+void HandleRGBW();
+void HandleW();
+void HandleAnim();
+void HandleSunrise();
 
 void TurnOnOff();
 void TurnOn();
@@ -90,8 +87,11 @@ void SunriseTransition(bool firstTime);
 void SetColors(byte i);
 void ResetColors();
 
+void HandleOTA();
+void OTA();
+
+void Buttons();
 boolean button(byte i);
-void HandleButton();
 
 #include "..\lib\Ledstrips\ledstrip_light.hpp"
 namespace ll = ledstripLights;
@@ -107,40 +107,7 @@ ll::LedstripRemote ledstripsRemote[amountRemote]; // Put in LedstripW ???
 const byte amount = amountRGB + amountRGBW + amountW + amountRemote;
 ll::Ledstrip *ledstrips[3];
 
-/*
-void ObjectTest(){
-	Serial.begin(115200);
 
-	ledstrips[0] = &ledstripsRGB[0];
-
-
-	Serial.print("sizeof(ll::LedstripRGB):");
-	Serial.println(sizeof(ll::LedstripRGB));
-	Serial.print("sizeof(ledstripsRGB[0]):");
-	Serial.println(sizeof(ledstripsRGB[0]));
-	Serial.print("sizeof(ledstrips[0]):");
-	Serial.println(sizeof(ledstrips[0]));
-	//Serial.println(sizeof(ledstripsRGB));
-	//Serial.println(sizeof(ledstrips));
-	Serial.println();
-
-	for (int i = 0; i < 1; i++){
-		auto ledstrip = ledstrips[i];
-		String test = ledstrip->getInfo();
-		Serial.println(test);
-	}
-	Serial.println();
-
-	ledstripsRGB[0].setValue(10,10,20);
-
-	for (int i = 0; i < 1; i++){
-		auto ledstrip = ledstrips[i];
-		String test = ledstrip->getInfo();
-		Serial.println(test);
-	}
-	Serial.println();
-}
-*/
 
 void SetupIO()
 { // Replace this by object instantiation
@@ -213,30 +180,32 @@ void SetupServer()
 	server.on("/", HandlePageMainHTML);
 	server.on("/PageMain.css", HandlePageMainCSS);
 	server.on("/PageMain.js", HandlePageMainJS);
+
 	server.on("/colorpicker", HandlePageColorPickerHTML);
 	server.on("/PageColorPicker.css", HandlePageColorPickerCSS);
 	server.on("/PageColorPicker.js", HandlePageColorPickerJS);
+
 	server.on("/sunrise", HandlePageSunriseHTML);
 	server.on("/PageSunrise.css", HandlePageSunriseCSS);
 	server.on("/PageSunrise.js", HandlePageSunriseJS);
 	*/
-	server.on("/sendrgbw", HandleRGBW);
-	server.on("/sendw", HandleW);
-	server.on("/onoff", HandleOnOff);
-	//server.on("/sendanim", HandleAnim);
-	//server.on("/sendsunrise", HandleSunrise);
 
 	server.on("/debug", HandleDebug);
 	server.on("/test", HandleTest);
 
+	server.on("/onoff", HandleOnOff);
+	server.on("/sendrgbw", HandleRGBW);
+	server.on("/sendw", HandleW);
+	//server.on("/sendanim", HandleAnim);
+	//server.on("/sendsunrise", HandleSunrise);
+
 	server.on("/ota", HandleOTA);
-	
+
 	server.begin();
 }
 
 void setup()
 {
-	//ObjectTest();
 	SetupIO();
 	SetupWiFiManager();
 	SetupOTA();
@@ -247,7 +216,7 @@ void setup()
 
 void loop()
 {
-	HandleButton();
+	Buttons();
 
 	server.handleClient();
 
@@ -270,54 +239,8 @@ void loop()
 	*/
 }
 
-void HandleDebug()
-{
-	// /debug
 
-	String text = "Debug text:\n";
-	for (auto &ledstrip : ledstrips)
-	{
-		text += ledstrip->getInfo();
-		text += "<br>";
-	}
-
-	server.send(200, "text/html", text);
-}
-void HandleTest()
-{
-	// /test
-
-	ledstripsRGBW[0].setValue(0, 0, 0, 255);
-
-	server.send(200, "text/html", "Ok");
-}
-void HandleOTA()
-{
-	// /ota
-
-	OTA();
-
-	server.send(200, "text/html", "Ok");
-}
-void OTA(){
-	unsigned long OTAtime = millis();
-	unsigned long debounce = 25000; // Time before OTA Upload
-	while (millis() - OTAtime < debounce)
-	{
-		ArduinoOTA.handle();
-		delay(10);
-	}
-}
-
-void ResetColors()
-{
-	for (auto &ledstrip : ledstrips)
-	{
-		ledstrip->turnOff();
-	}
-}
-
-/*
+/* Webpages
 void HandlePageMainHTML()
 {
   // /
@@ -380,6 +303,67 @@ void HandlePageSunriseJS()
   server.send(200, "text/js", js);
 }
 */
+
+void HandleDebug()
+{
+	// /debug
+
+	String text = "Debug text:\n";
+	for (auto &ledstrip : ledstrips)
+	{
+		text += ledstrip->getInfo();
+		text += "<br>";
+	}
+
+	server.send(200, "text/html", text);
+}
+void HandleTest()
+{
+	// /test
+
+	ledstripsRGBW[0].setValue(0, 0, 0, 255);
+
+	server.send(200, "text/html", "Ok");
+}
+
+
+void HandleOnOff()
+{
+	// /onoff?s=___
+	byte val = server.arg("s").toInt();
+
+	if (val)
+	{
+		TurnOnOff();
+	}
+
+	server.send(200, "text/plain", onoff ? "On" : "Off");
+}
+
+void TurnOnOff() {
+	onoff = !onoff;
+
+	if (onoff)
+	{
+		TurnOn();
+	}
+	else
+	{
+		TurnOff();
+	}
+}
+void TurnOn() {
+	onoff = true;
+	digitalWrite(PSUPin, HIGH);
+	ledstripsRGBW[0].setValue(0,0,0,255);
+}
+void TurnOff() {
+	onoff = false;
+	digitalWrite(PSUPin, LOW);
+	ResetColors();
+}
+
+
 void HandleRGBW()
 {
 	// /sendrgbw?id=___&r=___&g=___&b=___&w=___
@@ -429,63 +413,15 @@ void HandleW()
 	server.send(200, "text/json", json);
 }
 
-void HandleOnOff()
+void ResetColors()
 {
-	// /onoff?s=___
-	byte val = server.arg("s").toInt();
-
-	if (val)
+	for (auto &ledstrip : ledstrips)
 	{
-		TurnOnOff();
+		ledstrip->turnOff();
 	}
-
-	server.send(200, "text/plain", onoff ? "On" : "Off");
-}
-
-void TurnOnOff() {
-	onoff = !onoff;
-
-	if (onoff)
-	{
-		TurnOn();
-	}
-	else
-	{
-		TurnOff();
-	}
-}
-void TurnOn() {
-	onoff = true;
-	digitalWrite(PSUPin, HIGH);
-	ledstripsRGBW[0].setValue(0,0,0,255);
-}
-void TurnOff() {
-	onoff = false;
-	digitalWrite(PSUPin, LOW);
-	ResetColors();
 }
 
 /*
-void HandleAnim()
-{
-  // /sendanim?anim=___&speed=___
-  byte valAnim = server.arg("anim").toInt();
-  byte valSpeed = server.arg("speed").toInt();
-
-  if (valAnim > 0) {
-    animActive = --valAnim;
-    if (!onoff) TurnOn();
-  }
-
-  if (valSpeed > 0) {
-    animSpeed = valSpeed;
-  }
-
-  String json = "{\"anim\": " + String(animActive) + ", \"speed\": " + String(animSpeed) + "}";
-  server.send(200, "text/json", json);
-}
-
-
 void ColorTransition(byte i, bool firstTime)
 {
   const unsigned long delayTime = 1000;
@@ -519,6 +455,25 @@ void ColorTransition(byte i, bool firstTime)
 }
 
 
+
+void HandleAnim()
+{
+  // /sendanim?anim=___&speed=___
+  byte valAnim = server.arg("anim").toInt();
+  byte valSpeed = server.arg("speed").toInt();
+
+  if (valAnim > 0) {
+    animActive = --valAnim;
+    if (!onoff) TurnOn();
+  }
+
+  if (valSpeed > 0) {
+    animSpeed = valSpeed;
+  }
+
+  String json = "{\"anim\": " + String(animActive) + ", \"speed\": " + String(animSpeed) + "}";
+  server.send(200, "text/json", json);
+}
 
 void Wheel(int i, byte wheelPos) { // https://github.com/adafruit/Adafruit_NeoPixel/blob/master/examples/strandtest_wheel/strandtest_wheel.ino
   wheelPos = 255 - wheelPos;
@@ -835,7 +790,25 @@ void SunriseTransition(bool firstTime)
 }
 */
 
-void HandleButton()
+void HandleOTA()
+{
+	// /ota
+
+	OTA();
+
+	server.send(200, "text/html", "Ok");
+}
+void OTA(){
+	unsigned long OTAtime = millis();
+	unsigned long debounce = 25000; // Time before OTA Upload
+	while (millis() - OTAtime < debounce)
+	{
+		ArduinoOTA.handle();
+		delay(10);
+	}
+}
+
+void Buttons()
 {
 	// OTA
 	if (digitalRead(buttonPin[0]) && digitalRead(buttonPin[1]) && digitalRead(buttonPin[2]))
@@ -856,7 +829,6 @@ void HandleButton()
 
 	}
 }
-
 boolean button(byte i) // geeft DIRECT EENMALIG een '1' als knop i ingedrukt wordt
 {					   // knop i moet 50 ms los zijn voordat een nieuwe '1' gegeven kan worden
 					   // in dit voorbeeld is bereik i: [0..3]
