@@ -1,7 +1,7 @@
 /*
-  Author: Daniël van der Drift
+	Author: Daniël van der Drift
 
-  Project: Ledstrip controller
+	Project: Ledstrip controller
 */
 
 // Libraries
@@ -243,64 +243,64 @@ void loop()
 /* Webpages
 void HandlePageMainHTML()
 {
-  // /
+	// /
 
-  String html = String(pageMain_html);
-  server.send(200, "text/html", html);
+	String html = String(pageMain_html);
+	server.send(200, "text/html", html);
 }
 void HandlePageMainCSS()
 {
-  String css = String(pageMain_css);
-  server.send(200, "text/css", css);
+	String css = String(pageMain_css);
+	server.send(200, "text/css", css);
 }
 void HandlePageMainJS()
 {
-  String js = String(pageMain_js);
-  server.send(200, "text/js", js);
+	String js = String(pageMain_js);
+	server.send(200, "text/js", js);
 }
 
 void HandlePageColorPickerHTML()
 {
-  // /colorpicker?id=___
-  byte valId = server.arg("id").toInt();
+	// /colorpicker?id=___
+	byte valId = server.arg("id").toInt();
 
-  if (valId == 1 || valId == 2)
-  {
-    String html = String(pageColorPicker_html);
-    server.send(200, "text/html", html);
-  }
-  else
-  {
-    server.send(200, "text/html", "<!DOCTYPE html><html><body><center><h1>ID does not exist</h1></center></body></html>");
-  }
+	if (valId == 1 || valId == 2)
+	{
+		String html = String(pageColorPicker_html);
+		server.send(200, "text/html", html);
+	}
+	else
+	{
+		server.send(200, "text/html", "<!DOCTYPE html><html><body><center><h1>ID does not exist</h1></center></body></html>");
+	}
 }
 void HandlePageColorPickerCSS()
 {
-  String css = String(pageColorPicker_css);
-  server.send(200, "text/css", css);
+	String css = String(pageColorPicker_css);
+	server.send(200, "text/css", css);
 }
 void HandlePageColorPickerJS()
 {
-  String js = String(pageColorPicker_js);
-  server.send(200, "text/js", js);
+	String js = String(pageColorPicker_js);
+	server.send(200, "text/js", js);
 }
 
 void HandlePageSunriseHTML()
 {
-  // /sunrise
+	// /sunrise
 
-  String html = String(pageSunrise_html);
-  server.send(200, "text/html", html);
+	String html = String(pageSunrise_html);
+	server.send(200, "text/html", html);
 }
 void HandlePageSunriseCSS()
 {
-  String css = String(pageSunrise_css);
-  server.send(200, "text/css", css);
+	String css = String(pageSunrise_css);
+	server.send(200, "text/css", css);
 }
 void HandlePageSunriseJS()
 {
-  String js = String(pageSunrise_js);
-  server.send(200, "text/js", js);
+	String js = String(pageSunrise_js);
+	server.send(200, "text/js", js);
 }
 */
 
@@ -424,345 +424,317 @@ void ResetColors()
 /*
 void ColorTransition(byte i, bool firstTime)
 {
-  const unsigned long delayTime = 1000;
-  static unsigned long startTime[2];
+	const unsigned long delayTime = 1000;
+	static unsigned long startTime[2];
 
-  static byte oldValueRGBW[2][4];
+	static byte oldValueRGBW[2][4];
 
-  if (firstTime)
-  {
-    startTime[i] = millis();
-    transition[i] = true;
-    oldValueRGBW[i][0] = valueRGBW[i][0];
-    oldValueRGBW[i][1] = valueRGBW[i][1];
-    oldValueRGBW[i][2] = valueRGBW[i][2];
-    oldValueRGBW[i][3] = valueRGBW[i][3];
-  }
+	if (firstTime)
+	{
+		startTime[i] = millis();
+		transition[i] = true;
+		oldValueRGBW[i][0] = valueRGBW[i][0];
+		oldValueRGBW[i][1] = valueRGBW[i][1];
+		oldValueRGBW[i][2] = valueRGBW[i][2];
+		oldValueRGBW[i][3] = valueRGBW[i][3];
+	}
 
-  unsigned long timeDifference = millis() - startTime[i];
+	unsigned long timeDifference = millis() - startTime[i];
 
-  valueRGBW[i][0] = map(timeDifference, 0, delayTime, oldValueRGBW[i][0], newValueRGBW[i][0]);
-  valueRGBW[i][1] = map(timeDifference, 0, delayTime, oldValueRGBW[i][1], newValueRGBW[i][1]);
-  valueRGBW[i][2] = map(timeDifference, 0, delayTime, oldValueRGBW[i][2], newValueRGBW[i][2]);
-  valueRGBW[i][3] = map(timeDifference, 0, delayTime, oldValueRGBW[i][3], newValueRGBW[i][3]);
+	valueRGBW[i][0] = map(timeDifference, 0, delayTime, oldValueRGBW[i][0], newValueRGBW[i][0]);
+	valueRGBW[i][1] = map(timeDifference, 0, delayTime, oldValueRGBW[i][1], newValueRGBW[i][1]);
+	valueRGBW[i][2] = map(timeDifference, 0, delayTime, oldValueRGBW[i][2], newValueRGBW[i][2]);
+	valueRGBW[i][3] = map(timeDifference, 0, delayTime, oldValueRGBW[i][3], newValueRGBW[i][3]);
 
-  SetColors(i);
+	SetColors(i);
 
-  if (timeDifference >= delayTime)
-  {
-    transition[i] = false;
-  }
+	if (timeDifference >= delayTime)
+	{
+		transition[i] = false;
+	}
 }
 
 
 
 void HandleAnim()
 {
-  // /sendanim?anim=___&speed=___
-  byte valAnim = server.arg("anim").toInt();
-  byte valSpeed = server.arg("speed").toInt();
+	// /sendanim?anim=___&speed=___
+	byte valAnim = server.arg("anim").toInt();
+	byte valSpeed = server.arg("speed").toInt();
 
-  if (valAnim > 0) {
-    animActive = --valAnim;
-    if (!onoff) TurnOn();
-  }
+	if (valAnim > 0) {
+		animActive = --valAnim;
+		if (!onoff) TurnOn();
+	}
 
-  if (valSpeed > 0) {
-    animSpeed = valSpeed;
-  }
+	if (valSpeed > 0) {
+		animSpeed = valSpeed;
+	}
 
-  String json = "{\"anim\": " + String(animActive) + ", \"speed\": " + String(animSpeed) + "}";
-  server.send(200, "text/json", json);
+	String json = "{\"anim\": " + String(animActive) + ", \"speed\": " + String(animSpeed) + "}";
+	server.send(200, "text/json", json);
 }
 
 void Wheel(int i, byte wheelPos) { // https://github.com/adafruit/Adafruit_NeoPixel/blob/master/examples/strandtest_wheel/strandtest_wheel.ino
-  wheelPos = 255 - wheelPos;
-  if(wheelPos < 85) {
-    // {255 - wheelPos * 3, 0, wheelPos * 3};
-    newValueRGBW[i][0] = 255 - wheelPos * 3;
-    newValueRGBW[i][1] = 0;
-    newValueRGBW[i][2] = wheelPos * 3;
-    newValueRGBW[i][3] = 0;
-  }
-  else if(wheelPos < 170) {
-    wheelPos -= 85;
-    //{0, wheelPos * 3, 255 - wheelPos * 3};
-    newValueRGBW[i][0] = 0;
-    newValueRGBW[i][1] = wheelPos * 3;
-    newValueRGBW[i][2] = 255 - wheelPos * 3;
-    newValueRGBW[i][3] = 0;
-  }
-  else {
-    wheelPos -= 170;
-    //{wheelPos * 3, 255 - wheelPos * 3, 0};
-    newValueRGBW[i][0] = wheelPos * 3;
-    newValueRGBW[i][1] = 255 - wheelPos * 3;
-    newValueRGBW[i][2] = 0;
-    newValueRGBW[i][3] = 0;
-  }
+	wheelPos = 255 - wheelPos;
+	if(wheelPos < 85) {
+		// {255 - wheelPos * 3, 0, wheelPos * 3};
+		newValueRGBW[i][0] = 255 - wheelPos * 3;
+		newValueRGBW[i][1] = 0;
+		newValueRGBW[i][2] = wheelPos * 3;
+		newValueRGBW[i][3] = 0;
+	}
+	else if(wheelPos < 170) {
+		wheelPos -= 85;
+		//{0, wheelPos * 3, 255 - wheelPos * 3};
+		newValueRGBW[i][0] = 0;
+		newValueRGBW[i][1] = wheelPos * 3;
+		newValueRGBW[i][2] = 255 - wheelPos * 3;
+		newValueRGBW[i][3] = 0;
+	}
+	else {
+		wheelPos -= 170;
+		//{wheelPos * 3, 255 - wheelPos * 3, 0};
+		newValueRGBW[i][0] = wheelPos * 3;
+		newValueRGBW[i][1] = 255 - wheelPos * 3;
+		newValueRGBW[i][2] = 0;
+		newValueRGBW[i][3] = 0;
+	}
 }
 void animRainbow(int i, byte wheelPos) {
-  Wheel(i, wheelPos);
-  for (byte j = 0; j < 4; j++)
-  {
-    valueRGBW[i][j] = newValueRGBW[i][j];
-  }
+	Wheel(i, wheelPos);
+	for (byte j = 0; j < 4; j++)
+	{
+		valueRGBW[i][j] = newValueRGBW[i][j];
+	}
 }
 void animRandom(int i, byte wheelPos) {
-  wheelPos = 255 - wheelPos;
-  static byte lastWheelPos[2] = {0,0};
-  if(wheelPos % 85 < 43) {
-    if (lastWheelPos[i] % 85 >= 43){
-      lastWheelPos[i] = wheelPos;
+	wheelPos = 255 - wheelPos;
+	static byte lastWheelPos[2] = {0,0};
+	if(wheelPos % 85 < 43) {
+		if (lastWheelPos[i] % 85 >= 43){
+			lastWheelPos[i] = wheelPos;
 
-      byte wheelPos2 = random(255);
-      Wheel(i, wheelPos2);
+			byte wheelPos2 = random(255);
+			Wheel(i, wheelPos2);
 
-      for (byte j = 0; j < 4; j++)
-      {
-        valueRGBW[i][j] = newValueRGBW[i][j];
-      }
-    }
-  }else{
-    if(lastWheelPos[i] % 85 < 43) {
-      lastWheelPos[i] = wheelPos;
+			for (byte j = 0; j < 4; j++)
+			{
+				valueRGBW[i][j] = newValueRGBW[i][j];
+			}
+		}
+	}else{
+		if(lastWheelPos[i] % 85 < 43) {
+			lastWheelPos[i] = wheelPos;
 
-      // byte wheelPos2 = random(255);
-      // Wheel(i, wheelPos2);
+			// byte wheelPos2 = random(255);
+			// Wheel(i, wheelPos2);
 
-      // for (byte j = 0; j < 4; j++)
-      // {
-      //   valueRGBW[i][j] = newValueRGBW[i][j];
-      // }
-    }
-  }
+			// for (byte j = 0; j < 4; j++)
+			// {
+			//   valueRGBW[i][j] = newValueRGBW[i][j];
+			// }
+		}
+	}
 }
 void animRandomSmooth(int i, byte wheelPos) {
-  wheelPos = 255 - wheelPos;
-  static byte lastWheelPos[2] = {0,0};
-  if(wheelPos % 85 < 43) {
-    if (lastWheelPos[i] % 85 >= 43){
-      lastWheelPos[i] = wheelPos;
+	wheelPos = 255 - wheelPos;
+	static byte lastWheelPos[2] = {0,0};
+	if(wheelPos % 85 < 43) {
+		if (lastWheelPos[i] % 85 >= 43){
+			lastWheelPos[i] = wheelPos;
 
-      byte wheelPos2 = random(255);
-      Wheel(i, wheelPos2);
+			byte wheelPos2 = random(255);
+			Wheel(i, wheelPos2);
 
-      ColorTransition(i, true);
-    }
-  }else{
-    if(lastWheelPos[i] % 85 < 43) {
-      lastWheelPos[i] = wheelPos;
+			ColorTransition(i, true);
+		}
+	}else{
+		if(lastWheelPos[i] % 85 < 43) {
+			lastWheelPos[i] = wheelPos;
 
-      //byte wheelPos2 = random(255);
-      //wheel(i, wheelPos2);
-    }
-  }
+			//byte wheelPos2 = random(255);
+			//wheel(i, wheelPos2);
+		}
+	}
 }
 void animRandomBlink(int i, byte wheelPos) {
-  wheelPos = 255 - wheelPos;
-  static byte lastWheelPos[2] = {0,0};
-  if(wheelPos % 85 < 43) {
-    if (lastWheelPos[i] % 85 >= 43){
-      lastWheelPos[i] = wheelPos;
+	wheelPos = 255 - wheelPos;
+	static byte lastWheelPos[2] = {0,0};
+	if(wheelPos % 85 < 43) {
+		if (lastWheelPos[i] % 85 >= 43){
+			lastWheelPos[i] = wheelPos;
 
-      //byte wheelPos2 = random(255);
-      //Wheel(i, wheelPos2);
-    }
-    for (byte j = 0; j < 4; j++)
-    {
-      valueRGBW[i][j] = map(wheelPos % 85, 0, 43, 0, newValueRGBW[i][j]);
-    }
-  }else{
-    if(lastWheelPos[i] % 85 < 43) {
-      lastWheelPos[i] = wheelPos;
+			//byte wheelPos2 = random(255);
+			//Wheel(i, wheelPos2);
+		}
+		for (byte j = 0; j < 4; j++)
+		{
+			valueRGBW[i][j] = map(wheelPos % 85, 0, 43, 0, newValueRGBW[i][j]);
+		}
+	}else{
+		if(lastWheelPos[i] % 85 < 43) {
+			lastWheelPos[i] = wheelPos;
 
-      byte wheelPos2 = random(256);
-      Wheel(i, wheelPos2);
-    }
-    for (byte j = 0; j < 4; j++)
-    {
-      valueRGBW[i][j] = map(wheelPos % 85, 44, 85, newValueRGBW[i][j], 0);
-    }
-  }
+			byte wheelPos2 = random(256);
+			Wheel(i, wheelPos2);
+		}
+		for (byte j = 0; j < 4; j++)
+		{
+			valueRGBW[i][j] = map(wheelPos % 85, 44, 85, newValueRGBW[i][j], 0);
+		}
+	}
 }
 
 void ColorAnimation(byte anim)
 {
-  unsigned long animTime = millis();
-  byte animTime2 = (animTime/animSpeed) % 255;
+	unsigned long animTime = millis();
+	byte animTime2 = (animTime/animSpeed) % 255;
 
 
-  switch (anim)
-  {
-  case 1: // Rainbow
-    animRainbow(0, animTime2);
-    animRainbow(1, animTime2);
-    SetColors(0);
-    SetColors(1);
-    break;
-  case 2: // Random
-    animRandom(0, animTime2);
-    animRandom(1, animTime2);
-    SetColors(0);
-    SetColors(1);
-    break;
-  case 3: // Random smooth
-    animRandomSmooth(0, animTime2);
-    animRandomSmooth(1, animTime2);
-    //SetColors(0);
-    //SetColors(1);
-    break;
-  case 4: // Random blink
-    animRandomBlink(0, animTime2);
-    animRandomBlink(1, animTime2);
-    SetColors(0);
-    SetColors(1);
-    break;
-  default:
-    break;
-  }
+	switch (anim)
+	{
+	case 1: // Rainbow
+		animRainbow(0, animTime2);
+		animRainbow(1, animTime2);
+		SetColors(0);
+		SetColors(1);
+		break;
+	case 2: // Random
+		animRandom(0, animTime2);
+		animRandom(1, animTime2);
+		SetColors(0);
+		SetColors(1);
+		break;
+	case 3: // Random smooth
+		animRandomSmooth(0, animTime2);
+		animRandomSmooth(1, animTime2);
+		//SetColors(0);
+		//SetColors(1);
+		break;
+	case 4: // Random blink
+		animRandomBlink(0, animTime2);
+		animRandomBlink(1, animTime2);
+		SetColors(0);
+		SetColors(1);
+		break;
+	default:
+		break;
+	}
 }
 
 void HandleSunrise()
 {
-  // /sendsunrise?e=___&t=___
-  byte valE = server.arg("e").toInt();
-  //byte valT = server.arg("t").toInt();
+	// /sendsunrise?e=___&t=___
+	byte valE = server.arg("e").toInt();
+	//byte valT = server.arg("t").toInt();
 
-  if (valE == 1){
-	sunriseEnabled = true;
-  }
-  else if (valE == 2) {
-	sunriseEnabled = false;
-	sunriseState = 0;
-  }
+	if (valE == 1){
+		sunriseEnabled = true;
+	}
+	else if (valE == 2) {
+		sunriseEnabled = false;
+		sunriseState = 0;
+	}
 
-  server.send(200, "text/json", sunriseEnabled ? "1" : "0");
+	server.send(200, "text/json", sunriseEnabled ? "1" : "0");
 }
 void Sunrise()
 {
-  if (!sunriseEnabled){
-    return;
-  }
-
-  unsigned long currentMillis = millis();
-
-  if (sunriseState == 0){ // Calculate hours to wait
-	timeClient.update();
-
-	int time = timeClient.getHours() * 60 + timeClient.getMinutes();
-
-	if (time < sunriseTime-60){
-	  interval = ((sunriseTime-60) - time) * 60 * 1000;
+	if (!sunriseEnabled){
+		return;
 	}
-	else{
-	  interval = ((sunriseTime-60) + (24*60 - time)) * 60 * 1000;
+
+	unsigned long currentMillis = millis();
+
+	if (sunriseState == 0){ // Calculate hours to wait
+		timeClient.update();
+
+		int time = timeClient.getHours() * 60 + timeClient.getMinutes();
+
+		if (time < sunriseTime-60){
+			interval = ((sunriseTime-60) - time) * 60 * 1000;
+		}
+		else{
+			interval = ((sunriseTime-60) + (24*60 - time)) * 60 * 1000;
+		}
+		
+		sunriseState = 1;
 	}
+
+	if (sunriseState == 1){ // Wait hours
+		if (currentMillis - previousMillis >= interval) {
+			previousMillis = currentMillis;
+
+			sunriseState = 2;
+		}
+	}
+
+	if (sunriseState == 2){ // Calculate minutes to wait
+		timeClient.update();
+
+		int time = timeClient.getHours() * 60 + timeClient.getMinutes();
+
+		if (time < sunriseTime-sunriseDuration){
+			interval = ((sunriseTime-sunriseDuration) - time) * 60 * 1000;
+		}
+		else{
+			//Error?
+			sunriseState = 0;
+		}
+
+		sunriseState = 3;
+	}
+
+	if (sunriseState == 3){ // Wait minutes
+		if (currentMillis - previousMillis >= interval) {
+			previousMillis = currentMillis;
+
+			sunriseState = 4;
+		}
+	}
+
+	if (sunriseState == 4){ // Set sunrise transition
+		SunriseTransition(true);
+		sunriseState = 5;
+	}
+
+	if (sunriseState == 5 || sunriseState == 6){ // Do sunrise transition
+		SunriseTransition(false);
+	}
+	// 5 -> 6 in SunriseTransition function
 	
-	sunriseState = 1;
-  }
+	if (sunriseState == 7){ // Calculate safety delay to avoid double sunrise
+		interval = 3600 * 1000;
 
-  if (sunriseState == 1){ // Wait hours
-	if (currentMillis - previousMillis >= interval) {
-		previousMillis = currentMillis;
-
-		sunriseState = 2;
-	}
-  }
-
-  if (sunriseState == 2){ // Calculate minutes to wait
-	timeClient.update();
-
-	int time = timeClient.getHours() * 60 + timeClient.getMinutes();
-
-	if (time < sunriseTime-sunriseDuration){
-	  interval = ((sunriseTime-sunriseDuration) - time) * 60 * 1000;
-	}
-	else{
-	  //Error?
-	  sunriseState = 0;
+		sunriseState = 8;
 	}
 
-	sunriseState = 3;
-  }
+	if (sunriseState == 8){ // Wait safety delay
+		if (currentMillis - previousMillis >= interval) {
+			previousMillis = currentMillis;
 
-  if (sunriseState == 3){ // Wait minutes
-	if (currentMillis - previousMillis >= interval) {
-		previousMillis = currentMillis;
-
-		sunriseState = 4;
+			sunriseState = 0;
+		}
 	}
-  }
-
-  if (sunriseState == 4){ // Set sunrise transition
-	SunriseTransition(true);
-	sunriseState = 5;
-  }
-
-  if (sunriseState == 5 || sunriseState == 6){ // Do sunrise transition
-	SunriseTransition(false);
-  }
-  // 5 -> 6 in SunriseTransition function
-  
-  if (sunriseState == 7){ // Calculate safety delay to avoid double sunrise
-	interval = 3600 * 1000;
-
-	sunriseState = 8;
-  }
-
-  if (sunriseState == 8){ // Wait safety delay
-	if (currentMillis - previousMillis >= interval) {
-		previousMillis = currentMillis;
-
-		sunriseState = 0;
-	}
-  }
 }
 void SunriseTransition(bool firstTime)
 {
-  const unsigned long delayTime1 = roundf(sunriseDuration * 60 * 1000 * 0.8);
-  const unsigned long delayTime2 = roundf(sunriseDuration * 60 * 1000 * 0.2);
-  static unsigned long startTime;
+	const unsigned long delayTime1 = roundf(sunriseDuration * 60 * 1000 * 0.8);
+	const unsigned long delayTime2 = roundf(sunriseDuration * 60 * 1000 * 0.2);
+	static unsigned long startTime;
 
-  static byte oldValueRGBW[4];
+	static byte oldValueRGBW[4];
 
-  if (firstTime)
-  {
-	animActive = 0; // Turn off animation
-    if (!onoff) TurnOn();
-
-	newValueRGBW[1][0] = 255;
-    newValueRGBW[1][1] = 70;
-    newValueRGBW[1][2] = 0;
-    newValueRGBW[1][3] = 0;
-
-    startTime = millis();
-    oldValueRGBW[0] = valueRGBW[1][0];
-    oldValueRGBW[1] = valueRGBW[1][1];
-    oldValueRGBW[2] = valueRGBW[1][2];
-    oldValueRGBW[3] = valueRGBW[1][3];
-  }
-
-  unsigned long timeDifference = millis() - startTime;
-
-  if (sunriseState == 5){
-	if (timeDifference < delayTime1)
+	if (firstTime)
 	{
-		valueRGBW[1][0] = map(timeDifference, 0, delayTime1, oldValueRGBW[0], newValueRGBW[1][0]);
-		valueRGBW[1][1] = map(timeDifference, 0, delayTime1, oldValueRGBW[1], newValueRGBW[1][1]);
-		valueRGBW[1][2] = map(timeDifference, 0, delayTime1, oldValueRGBW[2], newValueRGBW[1][2]);
-		valueRGBW[1][3] = map(timeDifference, 0, delayTime1, oldValueRGBW[3], newValueRGBW[1][3]);
-	}
+		animActive = 0; // Turn off animation
+		if (!onoff) TurnOn();
 
-	if (timeDifference >= delayTime1)
-	{
-		sunriseState = 6;
-		timeDifference = 0;
-
-		newValueRGBW[1][0] = 200;
+		newValueRGBW[1][0] = 255;
 		newValueRGBW[1][1] = 70;
 		newValueRGBW[1][2] = 0;
-		newValueRGBW[1][3] = 255;
+		newValueRGBW[1][3] = 0;
 
 		startTime = millis();
 		oldValueRGBW[0] = valueRGBW[1][0];
@@ -770,23 +742,51 @@ void SunriseTransition(bool firstTime)
 		oldValueRGBW[2] = valueRGBW[1][2];
 		oldValueRGBW[3] = valueRGBW[1][3];
 	}
-  }
-  
-  if (sunriseState == 6){
-	if (timeDifference < delayTime2)
-	{
-		valueRGBW[1][0] = map(timeDifference, 0, delayTime2, oldValueRGBW[0], newValueRGBW[1][0]);
-		valueRGBW[1][1] = map(timeDifference, 0, delayTime2, oldValueRGBW[1], newValueRGBW[1][1]);
-		valueRGBW[1][2] = map(timeDifference, 0, delayTime2, oldValueRGBW[2], newValueRGBW[1][2]);
-		valueRGBW[1][3] = map(timeDifference, 0, delayTime2, oldValueRGBW[3], newValueRGBW[1][3]);
-	}
-	if (timeDifference >= delayTime2)
-	{
-		sunriseState = 7;
-	}
-  }
 
-  SetColors(1);
+	unsigned long timeDifference = millis() - startTime;
+
+	if (sunriseState == 5){
+		if (timeDifference < delayTime1)
+		{
+			valueRGBW[1][0] = map(timeDifference, 0, delayTime1, oldValueRGBW[0], newValueRGBW[1][0]);
+			valueRGBW[1][1] = map(timeDifference, 0, delayTime1, oldValueRGBW[1], newValueRGBW[1][1]);
+			valueRGBW[1][2] = map(timeDifference, 0, delayTime1, oldValueRGBW[2], newValueRGBW[1][2]);
+			valueRGBW[1][3] = map(timeDifference, 0, delayTime1, oldValueRGBW[3], newValueRGBW[1][3]);
+		}
+
+		if (timeDifference >= delayTime1)
+		{
+			sunriseState = 6;
+			timeDifference = 0;
+
+			newValueRGBW[1][0] = 200;
+			newValueRGBW[1][1] = 70;
+			newValueRGBW[1][2] = 0;
+			newValueRGBW[1][3] = 255;
+
+			startTime = millis();
+			oldValueRGBW[0] = valueRGBW[1][0];
+			oldValueRGBW[1] = valueRGBW[1][1];
+			oldValueRGBW[2] = valueRGBW[1][2];
+			oldValueRGBW[3] = valueRGBW[1][3];
+		}
+	}
+	
+	if (sunriseState == 6){
+		if (timeDifference < delayTime2)
+		{
+			valueRGBW[1][0] = map(timeDifference, 0, delayTime2, oldValueRGBW[0], newValueRGBW[1][0]);
+			valueRGBW[1][1] = map(timeDifference, 0, delayTime2, oldValueRGBW[1], newValueRGBW[1][1]);
+			valueRGBW[1][2] = map(timeDifference, 0, delayTime2, oldValueRGBW[2], newValueRGBW[1][2]);
+			valueRGBW[1][3] = map(timeDifference, 0, delayTime2, oldValueRGBW[3], newValueRGBW[1][3]);
+		}
+		if (timeDifference >= delayTime2)
+		{
+			sunriseState = 7;
+		}
+	}
+
+	SetColors(1);
 }
 */
 
