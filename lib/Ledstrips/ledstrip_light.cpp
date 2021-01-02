@@ -9,8 +9,6 @@ namespace ledstripLights {
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
 
-//st::cout << "Debug" << '\n'; // Remove
-
 // ====== GPIO definitions
 
 GPIO_Out_PWMServoDriver::GPIO_Out_PWMServoDriver(int pin): pin(pin), value(0)

@@ -17,14 +17,14 @@
 #include <DNSServer.h>
 #include <WiFiManager.h> //https://github.com/tzapu/WiFiManager
 
-#include <Wire.h>
-#include <Adafruit_PWMServoDriver.h>
+
 
 #include <NTPClient.h>
 #include <WiFiUdp.h>
 
+
 // Wifi settings
-// Wificredentials handled by WifiManager library
+// Wificredentials are handled by WifiManager library
 ESP8266WebServer server(80);
 
 // Webpages html
@@ -32,66 +32,17 @@ ESP8266WebServer server(80);
 #include "Webserver\PageColorPicker.h"
 #include "Webserver\PageSunrise.h"
 
+// Variables
+bool onoff = false;
+
 // IO
-Adafruit_PWMServoDriver pwmDriver = Adafruit_PWMServoDriver();
-const byte buttonPin[3] = {D0, D6, D7};
 const byte tempPin = A0;
 const byte PSUPin = D8;
 
-
-// Variables
-bool onoff = false;
-/*
-byte animActive;
-byte animSpeed = 30; // 4=1sec, 8=2sec, 20=5sec, 40=10sec
-
-// Sunrise
-const long utcOffsetInSeconds = 3600; // UTC +1.00
-WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
-bool sunriseEnabled = true;
-int sunriseState = 0;
-int sunriseTime = 8 * 60 + 0; // Minutes
-const int sunriseDuration = 15; // Minutes // Not more than 59 minutes
-unsigned long previousMillis = 0;
-unsigned long  interval = 1000;
-*/
-
-// Functions
-void HandlePageMainHTML();
-void HandlePageMainCSS();
-void HandlePageMainJS();
-void HandlePageColorPickerHTML();
-void HandlePageColorPickerCSS();
-void HandlePageColorPickerJS();
-void HandlePageSunriseHTML();
-void HandlePageSunriseCSS();
-void HandlePageSunriseJS();
-
-void HandleDebug();
-void HandleTest();
-
-void HandleOnOff();
-void HandleRGBW();
-void HandleW();
-void HandleAnim();
-void HandleSunrise();
-
-void TurnOnOff();
-void TurnOn();
-void TurnOff();
-void ColorTransition(byte i, bool firstTime);
-void ColorAnimation(byte anim);
-void Sunrise();
-void SunriseTransition(bool firstTime);
-void SetColors(byte i);
-void ResetColors();
-
-void HandleOTA();
-void OTA();
-
-void Buttons();
-boolean button(byte i);
+// ----- Ledstrips -----
+#include <Wire.h>
+#include <Adafruit_PWMServoDriver.h>
+Adafruit_PWMServoDriver pwmDriver = Adafruit_PWMServoDriver();
 
 #include "..\lib\Ledstrips\ledstrip_light.hpp"
 namespace ll = ledstripLights;
@@ -108,10 +59,71 @@ const byte amount = amountRGB + amountRGBW + amountW + amountRemote;
 ll::Ledstrip *ledstrips[3];
 
 
+#include "..\lib\Buttons\button.hpp"
+namespace bl = button_lib;
+
+const byte amountButton = 3;
+bl::Button buttons[amountButton] = {bl::Button("Top button", D0), bl::Button("Middle button", D6), bl::Button("Bottom button", D7)};
+
+
+
+/*
+byte animActive;
+byte animSpeed = 30; // 4=1sec, 8=2sec, 20=5sec, 40=10sec
+
+// Sunrise
+const long utcOffsetInSeconds = 3600; // UTC +1.00
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
+bool sunriseEnabled = true;
+int sunriseState = 0;
+int sunriseTime = 8 * 60 + 0; // Minutes
+const int sunriseDuration = 15; // Minutes // Not more than 59 minutes
+unsigned long previousMillis = 0;
+unsigned long  interval = 1000;
+*/
+
+
+
+// Functions
+void HandlePageMainHTML();
+void HandlePageMainCSS();
+void HandlePageMainJS();
+void HandlePageColorPickerHTML();
+void HandlePageColorPickerCSS();
+void HandlePageColorPickerJS();
+void HandlePageSunriseHTML();
+void HandlePageSunriseCSS();
+void HandlePageSunriseJS();
+
+void HandleDebug();
+void HandleTest();
+
+void HandleOnOff();
+void TurnOnOff();
+void TurnOn();
+void TurnOff();
+
+void HandleRGBW();
+void HandleW();
+void ResetColors();
+
+void HandleAnim();
+void HandleSunrise();
+
+void ColorTransition(byte i, bool firstTime);
+void ColorAnimation(byte anim);
+void Sunrise();
+void SunriseTransition(bool firstTime);
+
+void HandleOTA();
+void OTA();
+
+void Buttons();
+
 
 void SetupIO()
-{ // Replace this by object instantiation
-
+{
 	pwmDriver.begin();
 	pwmDriver.setPWMFreq(1600);
 	Wire.setClock(400000);
@@ -122,10 +134,6 @@ void SetupIO()
 
 	ResetColors();
 
-	for (byte i = 0; i < sizeof(buttonPin) / sizeof(buttonPin[0]); i++)
-	{
-		pinMode(buttonPin[i], INPUT);
-	}
 	//pinMode(tempPin, INPUT);
 	pinMode(PSUPin, OUTPUT); // Test
 	digitalWrite(PSUPin, HIGH); // Test
@@ -308,10 +316,18 @@ void HandleDebug()
 {
 	// /debug
 
-	String text = "Debug text:\n";
+	String text = "Debug text:<br><br>";
+	text += "Ledstrips:<br>";
 	for (auto &ledstrip : ledstrips)
 	{
 		text += ledstrip->getInfo();
+		text += "<br>";
+	}
+	text += "<br>";
+	text += "Buttons:<br>";
+	for (auto &button : buttons)
+	{
+		text += button.getInfo();
 		text += "<br>";
 	}
 
@@ -321,9 +337,9 @@ void HandleTest()
 {
 	// /test
 
-	ledstripsRGBW[0].setValue(0, 0, 0, 255);
+	//ledstripsRGBW[0].setValue(0, 0, 0, 255);
 
-	server.send(200, "text/html", "Ok");
+	server.send(200, "text/html", "Not used");
 }
 
 
@@ -811,45 +827,21 @@ void OTA(){
 void Buttons()
 {
 	// OTA
-	if (digitalRead(buttonPin[0]) && digitalRead(buttonPin[1]) && digitalRead(buttonPin[2]))
+	if (buttons[0].getState() && buttons[1].getState() && buttons[2].getState())
 	{
 		OTA();
 	}
 
-	if (button(0))
+	if (buttons[0].isPressed())
 	{ // On/off
 		TurnOnOff();
 	}
-	if (button(1))
+	if (buttons[1].isPressed())
 	{ // Lamp1
 
 	}
-	if (button(2))
+	if (buttons[2].isPressed())
 	{ // Schuineluik
 
 	}
-}
-boolean button(byte i) // geeft DIRECT EENMALIG een '1' als knop i ingedrukt wordt
-{					   // knop i moet 50 ms los zijn voordat een nieuwe '1' gegeven kan worden
-					   // in dit voorbeeld is bereik i: [0..3]
-
-	const unsigned long debounce = 50;
-	static unsigned long startTime[sizeof(buttonPin)]; // static array!!
-	static boolean buttonFlg[sizeof(buttonPin)];	   // static array!!
-
-	if (digitalRead(buttonPin[i]))
-	{
-		startTime[i] = millis();
-		if (!buttonFlg[i])
-		{
-			buttonFlg[i] = 1;
-			return (1);
-		}
-	}
-	else
-	{
-		if ((millis() - startTime[i]) > debounce)
-			buttonFlg[i] = 0;
-	}
-	return (0);
 }
