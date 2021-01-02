@@ -77,6 +77,9 @@ void HandleSunrise();
 void HandleDebug();
 void HandleTest();
 
+void HandleOTA();
+void OTA();
+
 void TurnOnOff();
 void TurnOn();
 void TurnOff();
@@ -225,6 +228,9 @@ void SetupServer()
 
 	server.on("/debug", HandleDebug);
 	server.on("/test", HandleTest);
+
+	server.on("/ota", HandleOTA);
+	
 	server.begin();
 }
 
@@ -284,6 +290,23 @@ void HandleTest()
 	ledstripsRGBW[0].setValue(0, 0, 0, 255);
 
 	server.send(200, "text/html", "Ok");
+}
+void HandleOTA()
+{
+	// /ota
+
+	OTA();
+
+	server.send(200, "text/html", "Ok");
+}
+void OTA(){
+	unsigned long OTAtime = millis();
+	unsigned long debounce = 25000; // Time before OTA Upload
+	while (millis() - OTAtime < debounce)
+	{
+		ArduinoOTA.handle();
+		delay(10);
+	}
 }
 
 void ResetColors()
@@ -817,13 +840,7 @@ void HandleButton()
 	// OTA
 	if (digitalRead(buttonPin[0]) && digitalRead(buttonPin[1]) && digitalRead(buttonPin[2]))
 	{
-		unsigned long OTAtime = millis();
-		unsigned long debounce = 25000; // Time before OTA Upload
-		while (millis() - OTAtime < debounce)
-		{
-			ArduinoOTA.handle();
-			delay(10);
-		}
+		OTA();
 	}
 
 	if (button(0))
