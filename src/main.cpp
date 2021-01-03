@@ -53,10 +53,10 @@ const byte amountRGBW = 2;
 ll::LedstripRGBW ledstripsRGBW[amountRGBW] = {ll::LedstripRGBW("Bureau", pwmDriver, 7, 6, 8, 12), ll::LedstripRGBW("Bed", pwmDriver, 4, 3, 5, 11)};
 const byte amountW = 1;
 ll::LedstripW ledstripsW[amountW] = {ll::LedstripW("Schuineluik", pwmDriver, 9)};
-const byte amountRemote = 0;
-ll::LedstripRemote ledstripsRemote[amountRemote]; // Put in LedstripW ???
+const byte amountRemote = 1; // Put in LedstripW ???
+ll::LedstripRemote ledstripsRemote[amountRemote] = {ll::LedstripRemote("Light", "http://192.168.178.61/on", "http://192.168.178.61/off")};
 const byte amount = amountRGB + amountRGBW + amountW + amountRemote;
-ll::Ledstrip *ledstrips[3];
+ll::Ledstrip *ledstrips[amount];
 
 
 #include "button.hpp"
@@ -131,6 +131,7 @@ void SetupIO()
 	ledstrips[0] = &ledstripsRGBW[0];
 	ledstrips[1] = &ledstripsRGBW[1];
 	ledstrips[2] = &ledstripsW[0];
+	ledstrips[3] = &ledstripsRemote[0];
 
 	ResetColors();
 
@@ -838,7 +839,7 @@ void Buttons()
 	}
 	if (buttons[1].isPressed())
 	{ // Lamp1
-
+		ledstripsRemote[0].turnOnOff();
 	}
 	if (buttons[2].isPressed())
 	{ // Schuineluik

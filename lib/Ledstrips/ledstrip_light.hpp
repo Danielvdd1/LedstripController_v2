@@ -2,7 +2,7 @@
 
 namespace ledstripLights {
 
-class GPIOOut;
+class GPIO_Out_PWMServoDriver;
 class Ledstrip;
 class LedstripRGB;
 class LedstripRGBW;
@@ -21,26 +21,41 @@ class LedstripRemote;
 class GPIO_Out_PWMServoDriver{
 
   public:
-    GPIO_Out_PWMServoDriver(int pin);
+    GPIO_Out_PWMServoDriver(Adafruit_PWMServoDriver &pwmDriver, int pin);
 	void setValue(int value);
 	int getValue();
   
   protected:
+	Adafruit_PWMServoDriver &pwmDriver;
     int pin;
     int value;
 };
 
-class GPIO_Out_Pin{
+// class GPIO_Out_Pin{
 
-  public:
-    GPIO_Out_Pin(int pin);
-	void setValue(int value);
-	int getValue();
+//   public:
+//     GPIO_Out_Pin(int pin);
+// 	void setValue(int value);
+// 	int getValue();
   
-  protected:
-    int pin;
-    int value;
-};
+//   protected:
+//     int pin;
+//     int value;
+// };
+
+// class GPIO_Out_Remote{
+
+//   public:
+//     GPIO_Out_Remote(String urlOn, String urlOff);
+// 	void turnOn();
+// 	void turnOff();
+// 	String getValue();
+  
+//   protected:
+//     String urlOn;
+// 	String urlOff;
+// 	String sendRequest(String url);
+// };
 
 class Ledstrip{
 
@@ -70,7 +85,6 @@ class LedstripRGB: public Ledstrip{
 	
 
   protected:
-	Adafruit_PWMServoDriver &pwmDriver;
 	GPIO_Out_PWMServoDriver gpio[3];
 	//int animType;
 	//int animSpeed;
@@ -90,7 +104,6 @@ class LedstripRGBW: public Ledstrip{
 
 	
   protected:
-	Adafruit_PWMServoDriver &pwmDriver;
   	GPIO_Out_PWMServoDriver gpio[4];
 	//int animType;
 	//int animSpeed;
@@ -107,23 +120,42 @@ class LedstripW: public Ledstrip{
 
   
   protected:
-	Adafruit_PWMServoDriver &pwmDriver;
 	GPIO_Out_PWMServoDriver gpio;
     bool binary;
 };
+
+// class LedstripRemote: public Ledstrip{
+
+//   public:
+//     LedstripRemote(String name, String url, String urlOn, String urlOff);
+// 	String getInfo();
+// 	void turnOn();
+// 	void turnOff();
+// 	void turnOnOff();
+// 	String getValue();
+  
+//   protected:
+//     String url;
+//     String urlOn;
+// 	String urlOff;
+// 	String sendRequest(String url);
+// };
 
 class LedstripRemote: public Ledstrip{
 
   public:
     LedstripRemote(String name, String urlOn, String urlOff);
 	String getInfo();
-    void turnOn();
-    void turnOff();
-	void setValue(int valW);
+	void turnOn();
+	void turnOff();
+	void turnOnOff();
+	int getValue();
   
   protected:
+    int value;
     String urlOn;
 	String urlOff;
+	String sendRequest(String url);
 };
 
 }
