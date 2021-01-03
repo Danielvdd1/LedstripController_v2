@@ -136,8 +136,7 @@ void SetupIO()
 	ResetColors();
 
 	//pinMode(tempPin, INPUT);
-	pinMode(PSUPin, OUTPUT); // Test
-	digitalWrite(PSUPin, HIGH); // Test
+	pinMode(PSUPin, OUTPUT);
 }
 void SetupWiFiManager()
 {
@@ -843,6 +842,7 @@ void Buttons()
 	}
 	if (buttons[2].isPressed())
 	{ // Schuineluik
-
+		TurnOn();
+		ledstripsW[0].turnOnOff();
 	}
 }

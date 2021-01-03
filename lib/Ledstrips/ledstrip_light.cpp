@@ -120,6 +120,15 @@ void LedstripW::turnOff(){
   	setValue(0);
 }
 
+void LedstripW::turnOnOff(){
+	if (gpio.getValue() == 0){
+		turnOn();
+	}
+	else {
+		turnOff();
+	}
+}
+
 void LedstripW::setValue(int valW){
 	gpio.setValue(valW);
 }
@@ -201,13 +210,13 @@ void LedstripRemote::turnOff(){
 void LedstripRemote::turnOnOff(){
 	//if (value != -1)
 	//{
-		if (value > 0)
+		if (value == 0)
 		{
-			turnOff();
+			turnOn();
 		}
 		else
 		{
-			turnOn();
+			turnOff();
 		}
 	//}
 }

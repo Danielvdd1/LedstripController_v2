@@ -116,6 +116,7 @@ class LedstripW: public Ledstrip{
 	String getInfo();
     void turnOn();
     void turnOff();
+	void turnOnOff();
 	void setValue(int valW);
 
   
