@@ -28,9 +28,9 @@
 ESP8266WebServer server(80);
 
 // Webpages html
-#include "Webserver\PageMenu.h"
-#include "Webserver\PageColorPicker.h"
-#include "Webserver\PageSunrise.h"
+#include "Webserver\PageMenu.hpp"
+#include "Webserver\PageColorPicker.hpp"
+#include "Webserver\PageSunrise.hpp"
 
 // Variables
 bool onoff = false;
