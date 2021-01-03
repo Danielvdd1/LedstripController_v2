@@ -79,6 +79,7 @@ class LedstripRGB: public Ledstrip{
     void turnOn();
     void turnOff();
     void setValue(int valR, int valG, int valB);
+
 	//void setAnimType(int);
 	//void setAnimSpeed(int);
 	//void animate();
@@ -86,6 +87,7 @@ class LedstripRGB: public Ledstrip{
 
   protected:
 	GPIO_Out_PWMServoDriver gpio[3];
+
 	//int animType;
 	//int animSpeed;
 };
@@ -97,7 +99,12 @@ class LedstripRGBW: public Ledstrip{
 	String getInfo();
     void turnOn();
     void turnOff();
-    void setValue(int valR, int valG, int valB, int pinW);
+    void setValue(int valR, int valG, int valB, int valW);
+
+	void colorTransition(int valNewR, int valNewG, int valNewB, int valNewW, unsigned long transitionTime = 1000);
+	void colorTransitionUpdate();
+	bool isTransitioning();
+
 	//void setAnimType(int);
 	//void setAnimSpeed(int);
 	//void animate();
@@ -105,6 +112,13 @@ class LedstripRGBW: public Ledstrip{
 	
   protected:
   	GPIO_Out_PWMServoDriver gpio[4];
+
+	bool transition;
+	unsigned long transitionTime;
+	unsigned long startTime;
+	int valOldRGBW[4];
+	int valNewRGBW[4];
+
 	//int animType;
 	//int animSpeed;
 };

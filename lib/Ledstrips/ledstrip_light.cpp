@@ -77,12 +77,19 @@ void LedstripRGB::setValue(int valR, int valG, int valB){
 
 // ====== LedstripRGBW definitions
 
-LedstripRGBW::LedstripRGBW(String name, Adafruit_PWMServoDriver &pwmDriver, int pinR, int pinG, int pinB, int pinW): Ledstrip(name), gpio{GPIO_Out_PWMServoDriver(pwmDriver, pinR), GPIO_Out_PWMServoDriver(pwmDriver, pinG), GPIO_Out_PWMServoDriver(pwmDriver, pinB), GPIO_Out_PWMServoDriver(pwmDriver, pinW)}
+LedstripRGBW::LedstripRGBW(String name, Adafruit_PWMServoDriver &pwmDriver, int pinR, int pinG, int pinB, int pinW): 
+	Ledstrip(name), 
+	gpio{GPIO_Out_PWMServoDriver(pwmDriver, pinR), GPIO_Out_PWMServoDriver(pwmDriver, pinG), GPIO_Out_PWMServoDriver(pwmDriver, pinB), GPIO_Out_PWMServoDriver(pwmDriver, pinW)},
+	transition(false),
+	transitionTime(0),
+	startTime(0),
+	valOldRGBW{0,0,0,0},
+	valNewRGBW{0,0,0,0}
 {
 }
 
 String LedstripRGBW::getInfo(){
-	String json = "{\"name\": \"" + name + "\", \"r\": " + String(gpio[0].getValue()) + ", \"g\": " + String(gpio[1].getValue()) + ", \"b\": " + String(gpio[2].getValue()) + ", \"w\": " + String(gpio[3].getValue()) + "}";
+	String json = "{\"name\": \"" + name + "\", \"r\": " + String(gpio[0].getValue()) + ", \"g\": " + String(gpio[1].getValue()) + ", \"b\": " + String(gpio[2].getValue()) + ", \"w\": " + String(gpio[3].getValue()) + ", \"isTransitioning\": " + String(isTransitioning()) + "}";
 	return json;
 }
 
@@ -99,6 +106,41 @@ void LedstripRGBW::setValue(int valR, int valG, int valB, int valW){
 	gpio[1].setValue(valG);
 	gpio[2].setValue(valB);
 	gpio[3].setValue(valW);
+}
+
+void LedstripRGBW::colorTransition(int valNewR, int valNewG, int valNewB, int valNewW, unsigned long transitionTime)
+{
+	startTime = millis();
+	transition = true;
+	valOldRGBW[0] = gpio[0].getValue();
+	valOldRGBW[1] = gpio[1].getValue();
+	valOldRGBW[2] = gpio[2].getValue();
+	valOldRGBW[3] = gpio[3].getValue();
+	valNewRGBW[0] = valNewR;
+	valNewRGBW[1] = valNewG;
+	valNewRGBW[2] = valNewB;
+	valNewRGBW[3] = valNewW;
+	this->transitionTime = transitionTime;
+}
+void LedstripRGBW::colorTransitionUpdate()
+{
+	if (transition){
+		unsigned long timeDifference = millis() - startTime;
+
+		gpio[0].setValue(map(timeDifference, 0, transitionTime, valOldRGBW[0], valNewRGBW[0]));
+		gpio[1].setValue(map(timeDifference, 0, transitionTime, valOldRGBW[1], valNewRGBW[1]));
+		gpio[2].setValue(map(timeDifference, 0, transitionTime, valOldRGBW[2], valNewRGBW[2]));
+		gpio[3].setValue(map(timeDifference, 0, transitionTime, valOldRGBW[3], valNewRGBW[3]));
+
+		if (timeDifference >= transitionTime)
+		{
+			transition = false;
+		}
+	}
+}
+bool LedstripRGBW::isTransitioning()
+{
+	return transition;
 }
 
 // ====== LedstripW definitions

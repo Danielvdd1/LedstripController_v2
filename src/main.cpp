@@ -228,23 +228,18 @@ void loop()
 
 	server.handleClient();
 
-	/*
-	if (transition[0])
+	for (auto &ledstrip : ledstripsRGBW)
 	{
-		ColorTransition(0, false);
+		ledstrip.colorTransitionUpdate();
 	}
 
-	if (transition[1])
-	{
-		ColorTransition(1, false);
-	}
 
-	if (animActive > 0) {
-		ColorAnimation(animActive);
-	}
+	// if (animActive > 0) {
+	// 	ColorAnimation(animActive);
+	// }
 
-	Sunrise();
-	*/
+	// Sunrise();
+	
 }
 
 
@@ -337,7 +332,7 @@ void HandleTest()
 {
 	// /test
 
-	//ledstripsRGBW[0].setValue(0, 0, 0, 255);
+	ledstripsRGBW[0].colorTransition(255, 200, 0, 200, 6000);
 
 	server.send(200, "text/html", "Not used");
 }
@@ -371,7 +366,8 @@ void TurnOnOff() {
 void TurnOn() {
 	onoff = true;
 	digitalWrite(PSUPin, HIGH);
-	ledstripsRGBW[0].setValue(0,0,0,255);
+	//ledstripsRGBW[0].setValue(0,0,0,255);
+	ledstripsRGBW[0].colorTransition(0,0,0,255);
 }
 void TurnOff() {
 	onoff = false;
@@ -384,16 +380,17 @@ void HandleRGBW()
 {
 	// /sendrgbw?id=___&r=___&g=___&b=___&w=___
 	int valId = server.arg("id").toInt(); if (valId > 0) valId = valId-1;
-	int valR = server.arg("r").toInt(); if (valR > 0) valR = min(max(valR-1, 255), 0);
-	int valG = server.arg("g").toInt(); if (valG > 0) valG = min(max(valG-1, 255), 0);
-	int valB = server.arg("b").toInt(); if (valB > 0) valB = min(max(valB-1, 255), 0);
-	int valW = server.arg("w").toInt(); if (valW > 0) valW = min(max(valW-1, 255), 0);
+	int valR = server.arg("r").toInt(); if (valR > 0) valR = min(max(valR-1, 0), 255);
+	int valG = server.arg("g").toInt(); if (valG > 0) valG = min(max(valG-1, 0), 255);
+	int valB = server.arg("b").toInt(); if (valB > 0) valB = min(max(valB-1, 0), 255);
+	int valW = server.arg("w").toInt(); if (valW > 0) valW = min(max(valW-1, 0), 255);
 
 	if (valId >= 0 && valId < amountRGBW)
 	{
 		if (!onoff) TurnOn();
 
-		ledstripsRGBW[valId].setValue(valR, valG, valB, valW);
+		//ledstripsRGBW[valId].setValue(valR, valG, valB, valW);
+		ledstripsRGBW[valId].colorTransition(valR, valG, valB, valW);
 	}
 
 	String json = "[";
@@ -410,7 +407,7 @@ void HandleW()
 {
 	// /sendw?id=___&w=___
 	int valId = server.arg("id").toInt(); if (valId > 0) valId = valId-1;
-	int valW = server.arg("w").toInt(); if (valW > 0) valW = min(max(valW-1, 255), 0);
+	int valW = server.arg("w").toInt(); if (valW > 0) valW = min(max(valW-1, 0), 255);
 
 	if (valId >= 0 && valId < amountW)
 	{
@@ -438,40 +435,6 @@ void ResetColors()
 }
 
 /*
-void ColorTransition(byte i, bool firstTime)
-{
-	const unsigned long delayTime = 1000;
-	static unsigned long startTime[2];
-
-	static byte oldValueRGBW[2][4];
-
-	if (firstTime)
-	{
-		startTime[i] = millis();
-		transition[i] = true;
-		oldValueRGBW[i][0] = valueRGBW[i][0];
-		oldValueRGBW[i][1] = valueRGBW[i][1];
-		oldValueRGBW[i][2] = valueRGBW[i][2];
-		oldValueRGBW[i][3] = valueRGBW[i][3];
-	}
-
-	unsigned long timeDifference = millis() - startTime[i];
-
-	valueRGBW[i][0] = map(timeDifference, 0, delayTime, oldValueRGBW[i][0], newValueRGBW[i][0]);
-	valueRGBW[i][1] = map(timeDifference, 0, delayTime, oldValueRGBW[i][1], newValueRGBW[i][1]);
-	valueRGBW[i][2] = map(timeDifference, 0, delayTime, oldValueRGBW[i][2], newValueRGBW[i][2]);
-	valueRGBW[i][3] = map(timeDifference, 0, delayTime, oldValueRGBW[i][3], newValueRGBW[i][3]);
-
-	SetColors(i);
-
-	if (timeDifference >= delayTime)
-	{
-		transition[i] = false;
-	}
-}
-
-
-
 void HandleAnim()
 {
 	// /sendanim?anim=___&speed=___
