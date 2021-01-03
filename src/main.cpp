@@ -44,7 +44,7 @@ const byte PSUPin = D8;
 #include <Adafruit_PWMServoDriver.h>
 Adafruit_PWMServoDriver pwmDriver = Adafruit_PWMServoDriver();
 
-#include "..\lib\Ledstrips\ledstrip_light.hpp"
+#include "ledstrip_light.hpp"
 namespace ll = ledstripLights;
 
 const byte amountRGB = 0;
@@ -59,7 +59,7 @@ const byte amount = amountRGB + amountRGBW + amountW + amountRemote;
 ll::Ledstrip *ledstrips[3];
 
 
-#include "..\lib\Buttons\button.hpp"
+#include "button.hpp"
 namespace bl = button_lib;
 
 const byte amountButton = 3;
