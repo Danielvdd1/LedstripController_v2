@@ -379,7 +379,7 @@ void TurnOff() {
 void HandleRGBW()
 {
 	// /sendrgbw?id=___&r=___&g=___&b=___&w=___
-	int valId = server.arg("id").toInt(); if (valId > 0) valId = valId-1;
+	int valId = server.arg("id").toInt(); valId = valId-1;
 	int valR = server.arg("r").toInt(); if (valR > 0) valR = min(max(valR-1, 0), 255);
 	int valG = server.arg("g").toInt(); if (valG > 0) valG = min(max(valG-1, 0), 255);
 	int valB = server.arg("b").toInt(); if (valB > 0) valB = min(max(valB-1, 0), 255);
@@ -406,7 +406,7 @@ void HandleRGBW()
 void HandleW()
 {
 	// /sendw?id=___&w=___
-	int valId = server.arg("id").toInt(); if (valId > 0) valId = valId-1;
+	int valId = server.arg("id").toInt(); valId = valId-1;
 	int valW = server.arg("w").toInt(); if (valW > 0) valW = min(max(valW-1, 0), 255);
 
 	if (valId >= 0 && valId < amountW)
