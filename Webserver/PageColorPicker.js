@@ -1,6 +1,7 @@
 var url_string = window.location.href;
 var url = new URL(url_string);
 var id = url.searchParams.get("id");
+id = id--;
 console.log("Id: " + id);
 
 var sliderR = document.getElementById('rangeR');
@@ -28,14 +29,15 @@ var xhttp0 = new XMLHttpRequest();
 xhttp0.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
         var jsonArray = JSON.parse(this.responseText);
-        // var jsonArray = '[{"r": 0, "g": 0, "b": 0, "w": 0}, {"r": 1, "g": 1, "b": 1, "w": 1}]';
-
-        var jsonObject = jsonArray[id - 1];
-        valR = jsonObject.r;
+        // var jsonArray = '[{"name": "", "r": 0, "g": 0, "b": 0, "w": 0, "isTransitioning": 0},...]';
+        var jsonObject = jsonArray[id];
+		var valname = jsonObject.name;
+		valR = jsonObject.r;
         valG = jsonObject.g;
         valB = jsonObject.b;
         valW = jsonObject.w;
-
+		//var valIsTransitioning = jsonObject.isTransitioning;
+		
         outputR.innerHTML = valR;
         outputG.innerHTML = valG;
         outputB.innerHTML = valB;
@@ -84,8 +86,13 @@ function Update() {
 }
 
 function SendRGBW() {
-    console.log('Send: /sendrgbw?id=' + id + '&r=' + valR + '&g=' + valG + '&b=' + valB + '&w=' + valW);
+	var tid = id + 1;
+	var tvalR = valR + 1;
+	var tvalG = valG + 1;
+	var tvalB = valB + 1;
+	var tvalW = valW + 1;
+    console.log('Send: /sendrgbw?id=' + tid + '&r=' + tvalR + '&g=' + tvalG + '&b=' + tvalB + '&w=' + tvalW);
     var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', '/sendrgbw?id=' + id + '&r=' + valR + '&g=' + valG + '&b=' + valB + '&w=' + valW, true);
+    xhttp.open('GET', '/sendrgbw?id=' + tid + '&r=' + tvalR + '&g=' + tvalG + '&b=' + tvalB + '&w=' + tvalW, true);
     xhttp.send();
 }

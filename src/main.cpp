@@ -184,7 +184,6 @@ void SetupOTA()
 }
 void SetupServer()
 {
-	/*
 	server.on("/", HandlePageMainHTML);
 	server.on("/PageMain.css", HandlePageMainCSS);
 	server.on("/PageMain.js", HandlePageMainJS);
@@ -192,7 +191,7 @@ void SetupServer()
 	server.on("/colorpicker", HandlePageColorPickerHTML);
 	server.on("/PageColorPicker.css", HandlePageColorPickerCSS);
 	server.on("/PageColorPicker.js", HandlePageColorPickerJS);
-
+	/*
 	server.on("/sunrise", HandlePageSunriseHTML);
 	server.on("/PageSunrise.css", HandlePageSunriseCSS);
 	server.on("/PageSunrise.js", HandlePageSunriseJS);
@@ -243,7 +242,6 @@ void loop()
 }
 
 
-/* Webpages
 void HandlePageMainHTML()
 {
 	// /
@@ -288,6 +286,7 @@ void HandlePageColorPickerJS()
 	server.send(200, "text/js", js);
 }
 
+/*
 void HandlePageSunriseHTML()
 {
 	// /sunrise

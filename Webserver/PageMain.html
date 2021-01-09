@@ -13,7 +13,7 @@
 	  Author: Daniël van der Drift
 
 	  Usage:
-	  /sendrgbw?id=(1/2)&r=(0-255)&g=(0-255)&b=(0-255)&w=(0-255)
+	  /sendrgbw?id=(1/2)&r=(1-256)&g=(1-256)&b=(1-256)&w=(1-256)
 	  /sendw?id=(1)&w=(0/1)
 	  /sendanim?anim=(1-5)
 	  /onoff
@@ -29,21 +29,21 @@
         <table id="t1" class="table1">
           <tr>
             <th>
-              <input id="b00" class='notselected' type='button' onclick='SendRGBW(1,255,0,0,0)' style='background: #f00;' value="Red">
+              <input id="b00" class='notselected' type='button' onclick='SendRGBW(0,255,0,0,0)' style='background: #f00;' value="Red">
             </th>
             <th>
-              <input id="b01" class='notselected' type='button' onclick='SendRGBW(1,0,255,0,0)' style='background: #0f0;' value="Green">
+              <input id="b01" class='notselected' type='button' onclick='SendRGBW(0,0,255,0,0)' style='background: #0f0;' value="Green">
             </th>
             <th>
-              <input id="b02" class='notselected' type='button' onclick='SendRGBW(1,0,0,255,0)' style='background: #00f;' value="Blue">
+              <input id="b02" class='notselected' type='button' onclick='SendRGBW(0,0,0,255,0)' style='background: #00f;' value="Blue">
             </th>
           </tr>
           <tr>
             <td>
-              <input id="b03" class='notselected' type='button' onclick='SendRGBW(1,0,0,0,255)' value="White">
+              <input id="b03" class='notselected' type='button' onclick='SendRGBW(0,0,0,0,255)' value="White">
             </td>
             <td>
-              <input id="b04" class='notselected' type='button' onclick='SendRGBW(1,0,0,0,0)' value="Black">
+              <input id="b04" class='notselected' type='button' onclick='SendRGBW(0,0,0,0,0)' value="Black">
             </td>
             <td>
               <input id="b05" class='notselected' type='button' onclick='location.href="/colorpicker?id=1"' style='font-size: 12px;' value="Pick color">
@@ -56,21 +56,21 @@
         <table id="t2" class="table1">
           <tr>
             <th>
-              <input id="b10" class='notselected' type='button' onclick='SendRGBW(2,255,0,0,0)' style='background: #f00;' value="Red">
+              <input id="b10" class='notselected' type='button' onclick='SendRGBW(1,255,0,0,0)' style='background: #f00;' value="Red">
             </th>
             <th>
-              <input id="b11" class='notselected' type='button' onclick='SendRGBW(2,0,255,0,0)' style='background: #0f0;' value="Green">
+              <input id="b11" class='notselected' type='button' onclick='SendRGBW(1,0,255,0,0)' style='background: #0f0;' value="Green">
             </th>
             <th>
-              <input id="b12" class='notselected' type='button' onclick='SendRGBW(2,0,0,255,0)' style='background: #00f;' value="Blue">
+              <input id="b12" class='notselected' type='button' onclick='SendRGBW(1,0,0,255,0)' style='background: #00f;' value="Blue">
             </th>
           </tr>
           <tr>
             <td>
-              <input id="b13" class='notselected' type='button' onclick='SendRGBW(2,0,0,0,255)' value="White">
+              <input id="b13" class='notselected' type='button' onclick='SendRGBW(1,0,0,0,255)' value="White">
             </td>
             <td>
-              <input id="b14" class='notselected' type='button' onclick='SendRGBW(2,0,0,0,0)' value="Black">
+              <input id="b14" class='notselected' type='button' onclick='SendRGBW(1,0,0,0,0)' value="Black">
             </td>
             <td>
               <input id="b15" class='notselected' type='button' onclick='location.href="/colorpicker?id=2"' style='font-size: 12px;' value="Pick color">
@@ -121,13 +121,6 @@
           <p>Lamp2</p>
           <label class="switch">
             <input id="switch1" type="checkbox" disabled>
-            <span class="slider"></span>
-          </label>
-        </th>
-        <th>
-          <p>Lamp3</p>
-          <label class="switch">
-            <input id="switch2" type="checkbox" disabled>
             <span class="slider"></span>
           </label>
         </th>

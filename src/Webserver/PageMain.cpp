@@ -6,7 +6,7 @@ const char* pageMain_html PROGMEM = R"=====(
 <html>
 <head>
   <title>Led strip</title>
-  <link rel='icon' type='image/png' href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMjHxIGmVAAACyElEQVQ4T32R60vTURjHBxb0T0SQkNTmrUzdvKZZWo3Ssla6Iu1monazIlFLX1iaRnaPmtosMcoudDMlSGPSC52KaZYVbpk6NTdzTn3z6beDCpL2hQcO5/D9PM/zPbK5lFq7mfSGWHp7+xgeHubs1ziyO+OZep5fWt1a98Mv1ZjNZgYHhxix2bDbxxgfH2dycpLcH9r5IbGXQ0isjCTlTbTUuZffv4clsx3HlNlZhaaTnOuKJ6Nl578gzfU1JFRE0tHRQU/PL4akCZyAiYmJGYCzsj/Hkdm+azagoaGB7cUhaHURtLV9wmz6iaW/H5vVhsPhmAXJaNFwplkj7qfsMtmH+npiCoLRXFtDU2MT3d3dYg2LxYLVamV0dHQGdMIQKwJ2noW5XK/n7dsaNuX4S5AgYi8H09Rk5FtXFyaTSUAGBwawSYEmv1KTUq0m7V20CLZPaiIrLSnlSVUVEemriMr0Q52rYst5JQaDAaPRKDJxwrQlESKj/Y+iOPhkA2NjY/RLawqAKtGdwAMKgpM9CU31IuyoN+HHV7LulA9RGb5sPOvP5rwAtl0KFWvG3QlnT9l68d0SoARlogK/3XL89shR7lWgTFAQIN0F7pdqn4IgJzzJg/Bj3kRKQHWukpiLQVJejcgCDnig2ueBn1bOao0cnx1uuKtdeV2ag6HqIq3VxbTXXsU33g1VglyAgw95EnbESwBFkAFSR++ty1jiu5grWcm80GVTmHWS74bbDLTeoyj7NP3GUr68v4FXjCv+2hViMmGe1opIVzKT4qirzMP8UUegQo7911PGh16iki9ncqSGCWu19HYXedTS2eZpFWclUV2WS+ubYhYtWMCfzgpGfjxkoYsLjoHn2H8+xtJ8b27ztB4UneLZrSzeV+QJUJc0do/Uta9Rx/e6m/83T0ufn0J5fhr6/FTKC9K4X5CK/kLKHGaZ7C/+EiOzvseUTgAAAABJRU5ErkJggg=="/>
+  <link rel='icon shortcut' type='image/png' href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMjHxIGmVAAACyElEQVQ4T32R60vTURjHBxb0T0SQkNTmrUzdvKZZWo3Ssla6Iu1monazIlFLX1iaRnaPmtosMcoudDMlSGPSC52KaZYVbpk6NTdzTn3z6beDCpL2hQcO5/D9PM/zPbK5lFq7mfSGWHp7+xgeHubs1ziyO+OZep5fWt1a98Mv1ZjNZgYHhxix2bDbxxgfH2dycpLcH9r5IbGXQ0isjCTlTbTUuZffv4clsx3HlNlZhaaTnOuKJ6Nl578gzfU1JFRE0tHRQU/PL4akCZyAiYmJGYCzsj/Hkdm+azagoaGB7cUhaHURtLV9wmz6iaW/H5vVhsPhmAXJaNFwplkj7qfsMtmH+npiCoLRXFtDU2MT3d3dYg2LxYLVamV0dHQGdMIQKwJ2noW5XK/n7dsaNuX4S5AgYi8H09Rk5FtXFyaTSUAGBwawSYEmv1KTUq0m7V20CLZPaiIrLSnlSVUVEemriMr0Q52rYst5JQaDAaPRKDJxwrQlESKj/Y+iOPhkA2NjY/RLawqAKtGdwAMKgpM9CU31IuyoN+HHV7LulA9RGb5sPOvP5rwAtl0KFWvG3QlnT9l68d0SoARlogK/3XL89shR7lWgTFAQIN0F7pdqn4IgJzzJg/Bj3kRKQHWukpiLQVJejcgCDnig2ueBn1bOao0cnx1uuKtdeV2ag6HqIq3VxbTXXsU33g1VglyAgw95EnbESwBFkAFSR++ty1jiu5grWcm80GVTmHWS74bbDLTeoyj7NP3GUr68v4FXjCv+2hViMmGe1opIVzKT4qirzMP8UUegQo7911PGh16iki9ncqSGCWu19HYXedTS2eZpFWclUV2WS+ubYhYtWMCfzgpGfjxkoYsLjoHn2H8+xtJ8b27ztB4UneLZrSzeV+QJUJc0do/Uta9Rx/e6m/83T0ufn0J5fhr6/FTKC9K4X5CK/kLKHGaZ7C/+EiOzvseUTgAAAABJRU5ErkJggg=="/>
   <meta name="theme-color" content="#4286f4">
 
   <meta name='viewport' content='width=device-width, initial-scale=1'>
@@ -17,7 +17,7 @@ const char* pageMain_html PROGMEM = R"=====(
 	  Author: Daniël van der Drift
 
 	  Usage:
-	  /sendrgbw?id=(1/2)&r=(0-255)&g=(0-255)&b=(0-255)&w=(0-255)
+	  /sendrgbw?id=(1/2)&r=(1-256)&g=(1-256)&b=(1-256)&w=(1-256)
 	  /sendw?id=(1)&w=(0/1)
 	  /sendanim?anim=(1-5)
 	  /onoff
@@ -33,21 +33,21 @@ const char* pageMain_html PROGMEM = R"=====(
         <table id="t1" class="table1">
           <tr>
             <th>
-              <input id="b00" class='notselected' type='button' onclick='SendRGBW(1,255,0,0,0)' style='background: #f00;' value="Red">
+              <input id="b00" class='notselected' type='button' onclick='SendRGBW(0,255,0,0,0)' style='background: #f00;' value="Red">
             </th>
             <th>
-              <input id="b01" class='notselected' type='button' onclick='SendRGBW(1,0,255,0,0)' style='background: #0f0;' value="Green">
+              <input id="b01" class='notselected' type='button' onclick='SendRGBW(0,0,255,0,0)' style='background: #0f0;' value="Green">
             </th>
             <th>
-              <input id="b02" class='notselected' type='button' onclick='SendRGBW(1,0,0,255,0)' style='background: #00f;' value="Blue">
+              <input id="b02" class='notselected' type='button' onclick='SendRGBW(0,0,0,255,0)' style='background: #00f;' value="Blue">
             </th>
           </tr>
           <tr>
             <td>
-              <input id="b03" class='notselected' type='button' onclick='SendRGBW(1,0,0,0,255)' value="White">
+              <input id="b03" class='notselected' type='button' onclick='SendRGBW(0,0,0,0,255)' value="White">
             </td>
             <td>
-              <input id="b04" class='notselected' type='button' onclick='SendRGBW(1,0,0,0,0)' value="Black">
+              <input id="b04" class='notselected' type='button' onclick='SendRGBW(0,0,0,0,0)' value="Black">
             </td>
             <td>
               <input id="b05" class='notselected' type='button' onclick='location.href="/colorpicker?id=1"' style='font-size: 12px;' value="Pick color">
@@ -60,21 +60,21 @@ const char* pageMain_html PROGMEM = R"=====(
         <table id="t2" class="table1">
           <tr>
             <th>
-              <input id="b10" class='notselected' type='button' onclick='SendRGBW(2,255,0,0,0)' style='background: #f00;' value="Red">
+              <input id="b10" class='notselected' type='button' onclick='SendRGBW(1,255,0,0,0)' style='background: #f00;' value="Red">
             </th>
             <th>
-              <input id="b11" class='notselected' type='button' onclick='SendRGBW(2,0,255,0,0)' style='background: #0f0;' value="Green">
+              <input id="b11" class='notselected' type='button' onclick='SendRGBW(1,0,255,0,0)' style='background: #0f0;' value="Green">
             </th>
             <th>
-              <input id="b12" class='notselected' type='button' onclick='SendRGBW(2,0,0,255,0)' style='background: #00f;' value="Blue">
+              <input id="b12" class='notselected' type='button' onclick='SendRGBW(1,0,0,255,0)' style='background: #00f;' value="Blue">
             </th>
           </tr>
           <tr>
             <td>
-              <input id="b13" class='notselected' type='button' onclick='SendRGBW(2,0,0,0,255)' value="White">
+              <input id="b13" class='notselected' type='button' onclick='SendRGBW(1,0,0,0,255)' value="White">
             </td>
             <td>
-              <input id="b14" class='notselected' type='button' onclick='SendRGBW(2,0,0,0,0)' value="Black">
+              <input id="b14" class='notselected' type='button' onclick='SendRGBW(1,0,0,0,0)' value="Black">
             </td>
             <td>
               <input id="b15" class='notselected' type='button' onclick='location.href="/colorpicker?id=2"' style='font-size: 12px;' value="Pick color">
@@ -125,13 +125,6 @@ const char* pageMain_html PROGMEM = R"=====(
           <p>Lamp2</p>
           <label class="switch">
             <input id="switch1" type="checkbox" disabled>
-            <span class="slider"></span>
-          </label>
-        </th>
-        <th>
-          <p>Lamp3</p>
-          <label class="switch">
-            <input id="switch2" type="checkbox" disabled>
             <span class="slider"></span>
           </label>
         </th>
@@ -282,13 +275,15 @@ var xhttp0 = new XMLHttpRequest();
 xhttp0.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
         var jsonArray = JSON.parse(this.responseText);
-        // var jsonArray = '[{"r": 0, "g": 0, "b": 0, "w": 0}, {"r": 1, "g": 1, "b": 1, "w": 1}]';
+        // var jsonArray = '[{"name": "", "r": 0, "g": 0, "b": 0, "w": 0, "isTransitioning": 0},...]';
         for (var i = 0; i < jsonArray.length; i++) {
             var jsonObject = jsonArray[i];
+            var vname = jsonObject.name;
             var vr = jsonObject.r;
             var vg = jsonObject.g;
             var vb = jsonObject.b;
             var vw = jsonObject.w;
+            //var visTransitioning = jsonObject.isTransitioning;
 
             // Clear border
             for (var j = 0; j < 6; j++) {
@@ -308,7 +303,6 @@ xhttp0.onreadystatechange = function () {
                 document.getElementById("b" + i + "4").className = "selected";
             } else {
                 document.getElementById("b" + i + "5").className = "selected";
-                //document.getElementById("b" + i + "5").style = 'background: rgb(' + (vr > vw ? vr : vw) + ',' + (vg > vw ? vg : vw) + ',' + (vb > vw ? vb : vw) + ')';
                 document.getElementById("b" + i + "5").style.background = 'rgb(' + (vr > vw ? vr : vw) + ',' + (vg > vw ? vg : vw) + ',' + (vb > vw ? vb : vw) + ')';
             }
         }
@@ -321,9 +315,16 @@ xhttp0.send();
 var xhttp1 = new XMLHttpRequest();
 xhttp1.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
-        var jsonObject = JSON.parse(this.responseText);
-        // var jsonObject = '{"a": 0, "b": 0, "c": 0}';
+        var jsonArray = JSON.parse(this.responseText);
+		// var jsonArray = '[{"name": "", "w": 0},...]';
+		// for (var i = 0; i < jsonArray.length; i++) {
+        //     var jsonObject = jsonArray[i];
+        //     var vname = jsonObject.name;
+		// 	var vw = jsonObject.w;
 
+		var jsonObject = jsonArray[0];
+        var vname = jsonObject.name;
+		var vw = jsonObject.w;
         var va = jsonObject.a;
 
         console.log("A: " + va);
@@ -352,25 +353,6 @@ xhttp2.onreadystatechange = function () {
 };
 xhttp2.open('GET', 'http://192.168.178.61/state', true);
 xhttp2.send();
-// Request value C
-var xhttp3 = new XMLHttpRequest();
-xhttp3.onreadystatechange = function () {
-    if (this.readyState == 4 && this.status == 200) {
-        var value = parseInt(this.responseText);
-
-        console.log("C: " + value);
-
-        value = (value === 1 ? true : false)
-
-        switch2.disabled = false;
-        switch2.checked = value;
-    }
-    else if (this.readyState == 4) {
-        console.log("C: offline");
-    }
-};
-xhttp3.open('GET', 'http://192.168.178.62/state', true);
-xhttp3.send();
 
 // Request value anim
 var xhttp4 = new XMLHttpRequest();
@@ -413,25 +395,29 @@ switch0.addEventListener('click', function () {
 switch1.addEventListener('click', function () {
     SendW(2, switch1.checked);
 });
-switch2.addEventListener('click', function () {
-    SendW(3, switch2.checked);
-});
 
 
 
 function SendRGBW(id, valR, valG, valB, valW) {
+	id++;
+	valR++;
+	valG++;
+	valB++;
+	valW++;
     console.log('Send: /sendrgbw?id=' + id + '&r=' + valR + '&g=' + valG + '&b=' + valB + '&w=' + valW);
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
             var jsonArray = JSON.parse(this.responseText);
-            // var jsonArray = '[{"r": 0, "g": 0, "b": 0, "w": 0}, {"r": 1, "g": 1, "b": 1, "w": 1}]';
+            // var jsonArray = '[{"name": "", "r": 0, "g": 0, "b": 0, "w": 0, "isTransitioning": 0},...]';
             for (var i = 0; i < jsonArray.length; i++) {
-                var jsonObject = jsonArray[i];
-                var vr = jsonObject.r;
-                var vg = jsonObject.g;
-                var vb = jsonObject.b;
-                var vw = jsonObject.w;
+				var jsonObject = jsonArray[i];
+				var vname = jsonObject.name;
+				var vr = jsonObject.r;
+				var vg = jsonObject.g;
+				var vb = jsonObject.b;
+				var vw = jsonObject.w;
+				//var visTransitioning = jsonObject.isTransitioning;
 
                 // Clear border
                 for (var j = 0; j < 6; j++) {
@@ -461,6 +447,8 @@ function SendRGBW(id, valR, valG, valB, valW) {
 }
 
 function SendW(id, valW) {
+	id++;
+	valW++;
     if (id === 1) {
         console.log('Send: /sendw?id=' + id + '&w=' + (valW ? '1' : '0'));
         var xhttp = new XMLHttpRequest();
@@ -470,12 +458,6 @@ function SendW(id, valW) {
         console.log('Send: http://192.168.178.61/' + (valW ? 'on' : 'off'));
         var xhttp = new XMLHttpRequest();
         xhttp.open('GET', 'http://192.168.178.61/' + (valW ? 'on' : 'off'), true);
-        xhttp.send();
-    }
-    else if (id === 3) {
-        console.log('Send: http://192.168.178.62/' + (valW ? 'on' : 'off'));
-        var xhttp = new XMLHttpRequest();
-        xhttp.open('GET', 'http://192.168.178.62/' + (valW ? 'on' : 'off'), true);
         xhttp.send();
     }
 }

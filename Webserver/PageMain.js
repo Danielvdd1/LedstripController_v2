@@ -8,13 +8,15 @@ var xhttp0 = new XMLHttpRequest();
 xhttp0.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
         var jsonArray = JSON.parse(this.responseText);
-        // var jsonArray = '[{"r": 0, "g": 0, "b": 0, "w": 0}, {"r": 1, "g": 1, "b": 1, "w": 1}]';
+        // var jsonArray = '[{"name": "", "r": 0, "g": 0, "b": 0, "w": 0, "isTransitioning": 0},...]';
         for (var i = 0; i < jsonArray.length; i++) {
             var jsonObject = jsonArray[i];
+            var vname = jsonObject.name;
             var vr = jsonObject.r;
             var vg = jsonObject.g;
             var vb = jsonObject.b;
             var vw = jsonObject.w;
+            //var visTransitioning = jsonObject.isTransitioning;
 
             // Clear border
             for (var j = 0; j < 6; j++) {
@@ -34,7 +36,6 @@ xhttp0.onreadystatechange = function () {
                 document.getElementById("b" + i + "4").className = "selected";
             } else {
                 document.getElementById("b" + i + "5").className = "selected";
-                //document.getElementById("b" + i + "5").style = 'background: rgb(' + (vr > vw ? vr : vw) + ',' + (vg > vw ? vg : vw) + ',' + (vb > vw ? vb : vw) + ')';
                 document.getElementById("b" + i + "5").style.background = 'rgb(' + (vr > vw ? vr : vw) + ',' + (vg > vw ? vg : vw) + ',' + (vb > vw ? vb : vw) + ')';
             }
         }
@@ -47,9 +48,16 @@ xhttp0.send();
 var xhttp1 = new XMLHttpRequest();
 xhttp1.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
-        var jsonObject = JSON.parse(this.responseText);
-        // var jsonObject = '{"a": 0, "b": 0, "c": 0}';
+        var jsonArray = JSON.parse(this.responseText);
+		// var jsonArray = '[{"name": "", "w": 0},...]';
+		// for (var i = 0; i < jsonArray.length; i++) {
+        //     var jsonObject = jsonArray[i];
+        //     var vname = jsonObject.name;
+		// 	var vw = jsonObject.w;
 
+		var jsonObject = jsonArray[0];
+        var vname = jsonObject.name;
+		var vw = jsonObject.w;
         var va = jsonObject.a;
 
         console.log("A: " + va);
@@ -78,25 +86,6 @@ xhttp2.onreadystatechange = function () {
 };
 xhttp2.open('GET', 'http://192.168.178.61/state', true);
 xhttp2.send();
-// Request value C
-var xhttp3 = new XMLHttpRequest();
-xhttp3.onreadystatechange = function () {
-    if (this.readyState == 4 && this.status == 200) {
-        var value = parseInt(this.responseText);
-
-        console.log("C: " + value);
-
-        value = (value === 1 ? true : false)
-
-        switch2.disabled = false;
-        switch2.checked = value;
-    }
-    else if (this.readyState == 4) {
-        console.log("C: offline");
-    }
-};
-xhttp3.open('GET', 'http://192.168.178.62/state', true);
-xhttp3.send();
 
 // Request value anim
 var xhttp4 = new XMLHttpRequest();
@@ -139,25 +128,29 @@ switch0.addEventListener('click', function () {
 switch1.addEventListener('click', function () {
     SendW(2, switch1.checked);
 });
-switch2.addEventListener('click', function () {
-    SendW(3, switch2.checked);
-});
 
 
 
 function SendRGBW(id, valR, valG, valB, valW) {
+	id++;
+	valR++;
+	valG++;
+	valB++;
+	valW++;
     console.log('Send: /sendrgbw?id=' + id + '&r=' + valR + '&g=' + valG + '&b=' + valB + '&w=' + valW);
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
             var jsonArray = JSON.parse(this.responseText);
-            // var jsonArray = '[{"r": 0, "g": 0, "b": 0, "w": 0}, {"r": 1, "g": 1, "b": 1, "w": 1}]';
+            // var jsonArray = '[{"name": "", "r": 0, "g": 0, "b": 0, "w": 0, "isTransitioning": 0},...]';
             for (var i = 0; i < jsonArray.length; i++) {
-                var jsonObject = jsonArray[i];
-                var vr = jsonObject.r;
-                var vg = jsonObject.g;
-                var vb = jsonObject.b;
-                var vw = jsonObject.w;
+				var jsonObject = jsonArray[i];
+				var vname = jsonObject.name;
+				var vr = jsonObject.r;
+				var vg = jsonObject.g;
+				var vb = jsonObject.b;
+				var vw = jsonObject.w;
+				//var visTransitioning = jsonObject.isTransitioning;
 
                 // Clear border
                 for (var j = 0; j < 6; j++) {
@@ -187,6 +180,8 @@ function SendRGBW(id, valR, valG, valB, valW) {
 }
 
 function SendW(id, valW) {
+	id++;
+	valW++;
     if (id === 1) {
         console.log('Send: /sendw?id=' + id + '&w=' + (valW ? '1' : '0'));
         var xhttp = new XMLHttpRequest();
@@ -196,12 +191,6 @@ function SendW(id, valW) {
         console.log('Send: http://192.168.178.61/' + (valW ? 'on' : 'off'));
         var xhttp = new XMLHttpRequest();
         xhttp.open('GET', 'http://192.168.178.61/' + (valW ? 'on' : 'off'), true);
-        xhttp.send();
-    }
-    else if (id === 3) {
-        console.log('Send: http://192.168.178.62/' + (valW ? 'on' : 'off'));
-        var xhttp = new XMLHttpRequest();
-        xhttp.open('GET', 'http://192.168.178.62/' + (valW ? 'on' : 'off'), true);
         xhttp.send();
     }
 }
