@@ -173,8 +173,7 @@ input.button:hover {
 const char* pageColorPicker_js PROGMEM = R"=====(
 var url_string = window.location.href;
 var url = new URL(url_string);
-var id = url.searchParams.get("id");
-id = id--;
+var id = parseInt(url.searchParams.get("id")) - 1;
 console.log("Id: " + id);
 
 var sliderR = document.getElementById('rangeR');
