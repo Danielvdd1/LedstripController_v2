@@ -324,11 +324,10 @@ xhttp1.onreadystatechange = function () {
 		var jsonObject = jsonArray[0];
         var vname = jsonObject.name;
 		var vw = jsonObject.w;
-        var va = jsonObject.a;
 
-        console.log("A: " + va);
+        console.log("A: " + vw);
 
-        switch0.checked = (va == 1 ? true : false);
+        switch0.checked = (vw !== 0 ? true : false);
     }
 };
 xhttp1.open('GET', '/sendw', true);
@@ -389,10 +388,10 @@ xhttp5.send();
 
 // Switch events
 switch0.addEventListener('click', function () {
-    SendW(0, switch0.checked);
+    SendW(0, (switch0.checked ? 255 : 0));
 });
 switch1.addEventListener('click', function () {
-    SendW(1, switch1.checked);
+    SendW(1, (switch1.checked ? 255 : 0));
 });
 
 
@@ -446,14 +445,14 @@ function SendRGBW(id, valR, valG, valB, valW) {
 }
 
 function SendW(id, valW) {
-	id++;
-	valW++;
-    if (id === 1) {
-        console.log('Send: /sendw?id=' + id + '&w=' + (valW ? '1' : '0'));
+    if (id === 0) {
+        var tid = id + 1;
+        var tvalW = valW + 1;
+        console.log('Send: /sendw?id=' + tid + '&w=' + tvalW);
         var xhttp = new XMLHttpRequest();
-        xhttp.open('GET', '/sendw?id=' + id + '&w=' + (valW ? '1' : '0'), true);
+        xhttp.open('GET', '/sendw?id=' + tid + '&w=' + tvalW, true);
         xhttp.send();
-    } else if (id === 2) {
+    } else if (id === 1) {
         console.log('Send: http://192.168.178.61/' + (valW ? 'on' : 'off'));
         var xhttp = new XMLHttpRequest();
         xhttp.open('GET', 'http://192.168.178.61/' + (valW ? 'on' : 'off'), true);
