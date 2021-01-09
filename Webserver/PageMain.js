@@ -1,6 +1,5 @@
 var switch0 = document.getElementById('switch0');
 var switch1 = document.getElementById('switch1');
-var switch2 = document.getElementById('switch2');
 
 
 // Request value rgbw
@@ -123,10 +122,10 @@ xhttp5.send();
 
 // Switch events
 switch0.addEventListener('click', function () {
-    SendW(1, switch0.checked);
+    SendW(0, switch0.checked);
 });
 switch1.addEventListener('click', function () {
-    SendW(2, switch1.checked);
+    SendW(1, switch1.checked);
 });
 
 
