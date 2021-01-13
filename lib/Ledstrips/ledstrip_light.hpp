@@ -104,7 +104,6 @@ class LedstripRGBW: public Ledstrip{
 
 	void colorTransition(int valNewR, int valNewG, int valNewB, int valNewW, unsigned long transitionTime = 1000);
 	void colorTransitionUpdate();
-	bool isTransitioning();
 
 	void setAnimType(int type); // Use enum
 	void setAnimSpeed(int speed);
@@ -114,11 +113,11 @@ class LedstripRGBW: public Ledstrip{
   protected:
   	GPIO_Out_PWMServoDriver gpio[4];
 
-	bool transition;
-	unsigned long transitionTime;
-	unsigned long startTime;
-	int valOldRGBW[4];
-	int valNewRGBW[4];
+	bool transition = false;
+	unsigned long transitionTime = 0;
+	unsigned long startTime = 0;
+	int valOldRGBW[4] = {0,0,0,0};
+	int valNewRGBW[4] = {0,0,0,0};
 
 	int animType = 0;
 	int animSpeed = 30;

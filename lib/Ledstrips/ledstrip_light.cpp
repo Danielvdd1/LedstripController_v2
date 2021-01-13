@@ -79,12 +79,7 @@ void LedstripRGB::setValue(int valR, int valG, int valB){
 
 LedstripRGBW::LedstripRGBW(String name, Adafruit_PWMServoDriver &pwmDriver, int pinR, int pinG, int pinB, int pinW): 
 	Ledstrip(name), 
-	gpio{GPIO_Out_PWMServoDriver(pwmDriver, pinR), GPIO_Out_PWMServoDriver(pwmDriver, pinG), GPIO_Out_PWMServoDriver(pwmDriver, pinB), GPIO_Out_PWMServoDriver(pwmDriver, pinW)},
-	transition(false),
-	transitionTime(0),
-	startTime(0),
-	valOldRGBW{0,0,0,0},
-	valNewRGBW{0,0,0,0}
+	gpio{GPIO_Out_PWMServoDriver(pwmDriver, pinR), GPIO_Out_PWMServoDriver(pwmDriver, pinG), GPIO_Out_PWMServoDriver(pwmDriver, pinB), GPIO_Out_PWMServoDriver(pwmDriver, pinW)}
 {
 }
 
@@ -94,7 +89,7 @@ String LedstripRGBW::getInfo(){
 	", \"g\": " + String(gpio[1].getValue()) + 
 	", \"b\": " + String(gpio[2].getValue()) + 
 	", \"w\": " + String(gpio[3].getValue()) + 
-	", \"transition\": " + String(isTransitioning()) + 
+	", \"transition\": " + String(transition) + 
 	", \"animType\": " + String(animType) + 
 	", \"animSpeed\": " + String(animSpeed) + 
 	"}";
@@ -187,10 +182,6 @@ void LedstripRGBW::colorTransitionUpdate()
 			transition = false;
 		}
 	}
-}
-bool LedstripRGBW::isTransitioning()
-{
-	return transition;
 }
 
 void LedstripRGBW::setAnimType(int type){
