@@ -108,6 +108,48 @@ void LedstripRGBW::setValue(int valR, int valG, int valB, int valW){
 	gpio[3].setValue(valW);
 }
 
+void LedstripRGBW::setValueHSV(int h, int s, int v){
+	if (!(0 <= h && h < 360) || !(0 <= s && s <= 100) || !(0 <= v && v <= 100))
+		return;
+
+	float s2 = s/100.0;
+	float v2 = v/100.0;
+	float r2 = 0;
+	float g2 = 0;
+	float b2 = 0;
+	
+	float c = v2 * s2;
+	float x = c * (1 - fabs(fmod((h/60.0),2) - 1));
+	float m = v2 - c;
+
+	if (0 <= h && h < 60){
+		r2 = c; g2 = x; b2 = 0;
+	}
+	else if (60 <= h && h < 120){
+		r2 = x; g2 = c; b2 = 0;
+	}
+	else if (120 <= h && h < 180){
+		r2 = 0; g2 = c; b2 = x;
+	}
+	else if (180 <= h && h < 240){
+		r2 = 0; g2 = x; b2 = c;
+	}
+	else if (240 <= h && h < 300){
+		r2 = x; g2 = 0; b2 = c;
+	}
+	else if (300 <= h && h < 360){
+		r2 = c; g2 = 0; b2 = x;
+	}
+
+	int r = (r2+m)*255;
+	int g = (g2+m)*255;
+	int b = (b2+m)*255;
+
+	gpio[0].setValue(r);
+	gpio[1].setValue(g);
+	gpio[2].setValue(b);
+}
+
 void LedstripRGBW::colorTransition(int valNewR, int valNewG, int valNewB, int valNewW, unsigned long transitionTime)
 {
 	startTime = millis();

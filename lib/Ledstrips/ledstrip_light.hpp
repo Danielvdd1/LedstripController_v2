@@ -100,6 +100,7 @@ class LedstripRGBW: public Ledstrip{
     void turnOn();
     void turnOff();
     void setValue(int valR, int valG, int valB, int valW);
+    void setValueHSV(int h, int s, int l); // 360°, 100%, 100%
 
 	void colorTransition(int valNewR, int valNewG, int valNewB, int valNewW, unsigned long transitionTime = 1000);
 	void colorTransitionUpdate();
@@ -121,6 +122,7 @@ class LedstripRGBW: public Ledstrip{
 
 	//int animType;
 	//int animSpeed;
+	//void animRainbow();
 };
 
 class LedstripW: public Ledstrip{

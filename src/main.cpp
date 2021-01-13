@@ -105,6 +105,7 @@ void TurnOn();
 void TurnOff();
 
 void HandleRGBW();
+void HandleHSV();
 void HandleW();
 void ResetColors();
 
@@ -202,6 +203,7 @@ void SetupServer()
 
 	server.on("/onoff", HandleOnOff);
 	server.on("/sendrgbw", HandleRGBW);
+	server.on("/sendhsv", HandleHSV);
 	server.on("/sendw", HandleW);
 	//server.on("/sendanim", HandleAnim);
 	//server.on("/sendsunrise", HandleSunrise);
@@ -329,11 +331,19 @@ void HandleDebug()
 }
 void HandleTest()
 {
-	// /test
+	// /test?x=___&y=___&z=___
+	int valX = server.arg("x").toInt();
+	int valY = server.arg("y").toInt();
+	int valZ = server.arg("z").toInt();
+	String debugText = "x: " + String(valX) + ", y: " + String(valY) + ", z: " + String(valZ);
+	//debugText += "<br>";
 
-	ledstripsRGBW[0].colorTransition(255, 200, 0, 200, 6000);
+	
+	//ledstripsRGBW[0].colorTransition(255, 200, 0, 200, 6000);
 
-	server.send(200, "text/html", "Not used");
+	ledstripsRGBW[0].setValueHSV(valX, valY, valZ);
+	
+	server.send(200, "text/html", debugText);
 }
 
 
@@ -379,10 +389,10 @@ void HandleRGBW()
 {
 	// /sendrgbw?id=___&r=___&g=___&b=___&w=___
 	int valId = server.arg("id").toInt(); valId = valId-1;
-	int valR = server.arg("r").toInt(); if (valR > 0) valR = min(max(valR-1, 0), 255);
-	int valG = server.arg("g").toInt(); if (valG > 0) valG = min(max(valG-1, 0), 255);
-	int valB = server.arg("b").toInt(); if (valB > 0) valB = min(max(valB-1, 0), 255);
-	int valW = server.arg("w").toInt(); if (valW > 0) valW = min(max(valW-1, 0), 255);
+	int valR = server.arg("r").toInt(); if (valR > 0) {valR = min(max(valR-1, 0), 255);}
+	int valG = server.arg("g").toInt(); if (valG > 0) {valG = min(max(valG-1, 0), 255);}
+	int valB = server.arg("b").toInt(); if (valB > 0) {valB = min(max(valB-1, 0), 255);}
+	int valW = server.arg("w").toInt(); if (valW > 0) {valW = min(max(valW-1, 0), 255);}
 
 	if (valId >= 0 && valId < amountRGBW)
 	{
@@ -390,6 +400,31 @@ void HandleRGBW()
 
 		//ledstripsRGBW[valId].setValue(valR, valG, valB, valW);
 		ledstripsRGBW[valId].colorTransition(valR, valG, valB, valW);
+	}
+
+	String json = "[";
+	for (int i = 0; i < amountRGBW; i++)
+	{
+		json += ledstripsRGBW[i].getInfo();
+		if (i < amountRGBW - 1) json += ",";
+	}
+	json += "]";
+	server.send(200, "text/json", json);
+}
+void HandleHSV()
+{
+	// /sendhsv?id=___&h=___&s=___&v=___ //&w=___
+	int valId = server.arg("id").toInt(); valId = valId-1;
+	int valH = server.arg("h").toInt(); if (valH > 0) valH = min(max(valH-1, 0), 359);
+	int valS = server.arg("s").toInt(); if (valS > 0) valS = min(max(valS-1, 0), 100);
+	int valV = server.arg("v").toInt(); if (valV > 0) valV = min(max(valV-1, 0), 100);
+	//int valW = server.arg("w").toInt(); if (valW > 0) valW = min(max(valW-1, 0), 255);
+
+	if (valId >= 0 && valId < amountRGBW)
+	{
+		if (!onoff) TurnOn();
+
+		ledstripsRGBW[valId].setValueHSV(valH, valS, valV);
 	}
 
 	String json = "[";
@@ -434,7 +469,7 @@ void ResetColors()
 }
 
 /*
-void HandleAnim()
+void HandleAnim() // Move inside /sendrgbw
 {
 	// /sendanim?anim=___&speed=___
 	byte valAnim = server.arg("anim").toInt();
