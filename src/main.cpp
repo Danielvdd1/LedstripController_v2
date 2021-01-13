@@ -4,7 +4,7 @@
 	Project: Ledstrip controller
 */
 
-// Libraries
+// ----- Libraries -----
 #include <Arduino.h> // Required for Visual Studio Code
 
 #include <ESP8266WiFi.h>
@@ -23,7 +23,7 @@
 #include <WiFiUdp.h>
 
 
-// Wifi settings
+// ----- Wifi settings -----
 // Wificredentials are handled by WifiManager library
 ESP8266WebServer server(80);
 
@@ -59,6 +59,7 @@ const byte amount = amountRGB + amountRGBW + amountW + amountRemote;
 ll::Ledstrip *ledstrips[amount];
 
 
+// ----- Buttons -----
 #include "button.hpp"
 namespace bl = button_lib;
 
@@ -68,7 +69,7 @@ bl::Button buttons[amountButton] = {bl::Button("Top button", D0), bl::Button("Mi
 
 
 /*
-// Sunrise
+// ----- Sunrise -----
 const long utcOffsetInSeconds = 3600; // UTC +1.00
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
@@ -82,7 +83,7 @@ unsigned long  interval = 1000;
 
 
 
-// Functions
+// ----- Functions -----
 void HandlePageMainHTML();
 void HandlePageMainCSS();
 void HandlePageMainJS();
@@ -106,12 +107,12 @@ void HandleHSV();
 void HandleW();
 void ResetColors();
 
+/*
 void HandleSunrise();
 
-void ColorTransition(byte i, bool firstTime);
-void ColorAnimation(byte anim);
 void Sunrise();
 void SunriseTransition(bool firstTime);
+*/
 
 void HandleOTA();
 void OTA();
@@ -207,7 +208,6 @@ void SetupServer()
 
 	server.begin();
 }
-
 void setup()
 {
 	SetupIO();
@@ -392,7 +392,7 @@ void HandleRGBW()
 	{
 		if (!onoff) TurnOn();
 
-		if (valAT > 0 || valAS > 0){ // Sometning with animation
+		if (valAT > 0 || valAS > 0){ // Something with animation
 			if (valAT > 0){
 				valAT = max(valAT-1, 0);
 				ledstripsRGBW[valId].setAnimType(valAT);
