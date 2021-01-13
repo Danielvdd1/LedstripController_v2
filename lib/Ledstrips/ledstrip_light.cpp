@@ -89,7 +89,15 @@ LedstripRGBW::LedstripRGBW(String name, Adafruit_PWMServoDriver &pwmDriver, int 
 }
 
 String LedstripRGBW::getInfo(){
-	String json = "{\"name\": \"" + name + "\", \"r\": " + String(gpio[0].getValue()) + ", \"g\": " + String(gpio[1].getValue()) + ", \"b\": " + String(gpio[2].getValue()) + ", \"w\": " + String(gpio[3].getValue()) + ", \"isTransitioning\": " + String(isTransitioning()) + "}";
+	String json = "{\"name\": \"" + name + 
+	"\", \"r\": " + String(gpio[0].getValue()) + 
+	", \"g\": " + String(gpio[1].getValue()) + 
+	", \"b\": " + String(gpio[2].getValue()) + 
+	", \"w\": " + String(gpio[3].getValue()) + 
+	", \"transition\": " + String(isTransitioning()) + 
+	", \"animType\": " + String(animType) + 
+	", \"animSpeed\": " + String(animSpeed) + 
+	"}";
 	return json;
 }
 
@@ -183,6 +191,35 @@ void LedstripRGBW::colorTransitionUpdate()
 bool LedstripRGBW::isTransitioning()
 {
 	return transition;
+}
+
+void LedstripRGBW::setAnimType(int type){
+	if (type <= 0){
+		animType = 0;
+	}
+	else{
+		animType = type;
+	}
+}
+void LedstripRGBW::setAnimSpeed(int speed){
+	if (true) // set conditions
+		animSpeed = speed;
+}
+void LedstripRGBW::animate(){
+	unsigned long animTime = millis();
+
+	switch (animType)
+	{
+	case 1:
+		animRainbow((animTime/animSpeed)%360);
+		break;
+	
+	default:
+		break;
+	}
+}
+void LedstripRGBW::animRainbow(int animTime){
+	setValueHSV(animTime, 100, 100);
 }
 
 // ====== LedstripW definitions

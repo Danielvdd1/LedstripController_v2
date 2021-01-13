@@ -106,9 +106,9 @@ class LedstripRGBW: public Ledstrip{
 	void colorTransitionUpdate();
 	bool isTransitioning();
 
-	//void setAnimType(int);
-	//void setAnimSpeed(int);
-	//void animate();
+	void setAnimType(int type); // Use enum
+	void setAnimSpeed(int speed);
+	void animate();
 
 	
   protected:
@@ -120,9 +120,9 @@ class LedstripRGBW: public Ledstrip{
 	int valOldRGBW[4];
 	int valNewRGBW[4];
 
-	//int animType;
-	//int animSpeed;
-	//void animRainbow();
+	int animType = 0;
+	int animSpeed = 30;
+	void animRainbow(int animTime);
 };
 
 class LedstripW: public Ledstrip{

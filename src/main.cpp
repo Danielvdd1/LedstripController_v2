@@ -68,9 +68,6 @@ bl::Button buttons[amountButton] = {bl::Button("Top button", D0), bl::Button("Mi
 
 
 /*
-byte animActive;
-byte animSpeed = 30; // 4=1sec, 8=2sec, 20=5sec, 40=10sec
-
 // Sunrise
 const long utcOffsetInSeconds = 3600; // UTC +1.00
 WiFiUDP ntpUDP;
@@ -109,7 +106,6 @@ void HandleHSV();
 void HandleW();
 void ResetColors();
 
-void HandleAnim();
 void HandleSunrise();
 
 void ColorTransition(byte i, bool firstTime);
@@ -205,7 +201,6 @@ void SetupServer()
 	server.on("/sendrgbw", HandleRGBW);
 	server.on("/sendhsv", HandleHSV);
 	server.on("/sendw", HandleW);
-	//server.on("/sendanim", HandleAnim);
 	//server.on("/sendsunrise", HandleSunrise);
 
 	server.on("/ota", HandleOTA);
@@ -232,12 +227,9 @@ void loop()
 	for (auto &ledstrip : ledstripsRGBW)
 	{
 		ledstrip.colorTransitionUpdate();
+		ledstrip.animate();
 	}
 
-
-	// if (animActive > 0) {
-	// 	ColorAnimation(animActive);
-	// }
 
 	// Sunrise();
 	
@@ -387,19 +379,33 @@ void TurnOff() {
 
 void HandleRGBW()
 {
-	// /sendrgbw?id=___&r=___&g=___&b=___&w=___
+	// /sendrgbw?id=___&r=___&g=___&b=___&w=___&at=___&as=___
 	int valId = server.arg("id").toInt(); valId = valId-1;
 	int valR = server.arg("r").toInt(); if (valR > 0) {valR = min(max(valR-1, 0), 255);}
 	int valG = server.arg("g").toInt(); if (valG > 0) {valG = min(max(valG-1, 0), 255);}
 	int valB = server.arg("b").toInt(); if (valB > 0) {valB = min(max(valB-1, 0), 255);}
 	int valW = server.arg("w").toInt(); if (valW > 0) {valW = min(max(valW-1, 0), 255);}
+	int valAT = server.arg("at").toInt();
+	int valAS = server.arg("as").toInt();
 
 	if (valId >= 0 && valId < amountRGBW)
 	{
 		if (!onoff) TurnOn();
 
-		//ledstripsRGBW[valId].setValue(valR, valG, valB, valW);
-		ledstripsRGBW[valId].colorTransition(valR, valG, valB, valW);
+		if (valAT > 0 || valAS > 0){ // Sometning with animation
+			if (valAT > 0){
+				valAT = max(valAT-1, 0);
+				ledstripsRGBW[valId].setAnimType(valAT);
+			}
+			if (valAS > 0){
+				valAS = max(valAS-1, 1);
+				ledstripsRGBW[valId].setAnimSpeed(valAS);
+			}
+		}
+		else{
+			//ledstripsRGBW[valId].setValue(valR, valG, valB, valW);
+			ledstripsRGBW[valId].colorTransition(valR, valG, valB, valW);
+		}
 	}
 
 	String json = "[";
