@@ -95,3 +95,49 @@ function SendRGBW() {
     xhttp.open('GET', '/sendrgbw?id=' + tid + '&r=' + tvalR + '&g=' + tvalG + '&b=' + tvalB + '&w=' + tvalW, true);
     xhttp.send();
 }
+
+function SendAnimType(animType) {
+	var tid = id + 1;
+	var tanimType = animType + 1;
+    console.log('Send: /sendrgbw?id=' + tid + '&at=' + tanimType);
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            var jsonObject = JSON.parse(this.responseText);
+            // var jsonObject = {"animType": 0, "animSpeed": 0}';
+            var vat = jsonObject.animType;
+            var vas = jsonObject.animSpeed;
+
+            // Set border
+            for (var j = 0; j < 6; j++) {
+                if (vat == j) {
+                    document.getElementById("b2" + j).className = "selected";
+                }
+                else {
+                    document.getElementById("b2" + j).className = "notselected";
+                }
+            }
+        }
+    };
+    xhttp.open('GET', '/sendrgbw?id=' + tid + '&at=' + tanimType, true);
+    xhttp.send();
+}
+
+function SendAnimSpeed(animSpeed) {
+	var tid = id + 1;
+	var tanimSpeed = animSpeed + 1;
+    console.log('Send: /sendrgbw?id=' + tid + '&as=' + tanimSpeed);
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            var jsonObject = JSON.parse(this.responseText);
+            // var jsonObject = {"animType": 0, "animSpeed": 0}';
+            var vat = jsonObject.animType;
+            var vas = jsonObject.animSpeed;
+
+            //
+        }
+    };
+    xhttp.open('GET', '/sendrgbw?id=' + tid + '&as=' + tanimSpeed, true);
+    xhttp.send();
+}

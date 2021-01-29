@@ -82,33 +82,6 @@ const char* pageMain_html PROGMEM = R"=====(
           </tr>
         </table>
       </div>
-      <div id="item">
-        <p>Animations</p>
-        <table id="t3" class="table1">
-          <tr>
-            <th>
-              <input id="b20" class='notselected' type='button' onclick='SendAnim(1)' style='font-size: 12px;' value="Nothing">
-            </th>
-            <th>
-              <input id="b21" class='notselected' type='button' onclick='SendAnim(2)' style='font-size: 12px;' value="Rainbow">
-            </th>
-            <th>
-              <input id="b22" class='notselected' type='button' onclick='SendAnim(3)' style='font-size: 12px;' value="Random">
-            </th>
-          </tr>
-          <tr>
-            <td>
-              <input id="b23" class='notselected' type='button' onclick='SendAnim(4)' style='font-size: 12px;' value="Random smooth">
-            </td>
-            <td>
-              <input id="b24" class='notselected' type='button' onclick='SendAnim(5)' style='font-size: 12px;' value="Random blink">
-            </td>
-            <td>
-              <input id="b25" class='notselected' type='button' onclick='location.href="/sendanim"' style='font-size: 12px;' value="Speed selection" disabled>
-            </td>
-          </tr>
-        </table>
-      </div>
     </div>
     <br>
   
@@ -458,31 +431,6 @@ function SendW(id, valW) {
         xhttp.open('GET', 'http://192.168.178.61/' + (valW ? 'on' : 'off'), true);
         xhttp.send();
     }
-}
-
-function SendAnim(anim) {
-    console.log('Send: /sendanim?anim=' + anim);
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-            var jsonObject = JSON.parse(this.responseText);
-            // var jsonObject = {"anim": 0, "speed": 0}';
-            var vanim = jsonObject.anim;
-            var vspeed = jsonObject.speed;
-
-            // Set border
-            for (var j = 0; j < 6; j++) {
-                if (vanim == j) {
-                    document.getElementById("b2" + j).className = "selected";
-                }
-                else {
-                    document.getElementById("b2" + j).className = "notselected";
-                }
-            }
-        }
-    };
-    xhttp.open('GET', '/sendanim?anim=' + anim, true);
-    xhttp.send();
 }
 
 function SendOnOff() {

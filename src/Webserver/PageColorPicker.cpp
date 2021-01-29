@@ -62,6 +62,36 @@ const char* pageColorPicker_html PROGMEM = R"=====(
     <input class='button' type='button' onclick='SendRGBW()' style='width:140px; height:60px' value="Send">
     <p id='textRGBW'>0 0 0 0</p>
   </center>
+  <br>
+  <br>
+  <br>
+  <div id="item">
+    <p>Animations</p>
+    <table id="t3" class="table1">
+      <tr>
+        <th>
+          <input id="b20" class='notselected' type='button' onclick='SendAnimType(0)' style='font-size: 12px;' value="Nothing">
+        </th>
+        <th>
+          <input id="b21" class='notselected' type='button' onclick='SendAnimType(1)' style='font-size: 12px;' value="Rainbow">
+        </th>
+        <th>
+          <input id="b22" class='notselected' type='button' onclick='SendAnimType(2)' style='font-size: 12px;' value="Random">
+        </th>
+      </tr>
+      <tr>
+        <td>
+          <input id="b23" class='notselected' type='button' onclick='SendAnimType(3)' style='font-size: 12px;' value="Random smooth">
+        </td>
+        <td>
+          <input id="b24" class='notselected' type='button' onclick='SendAnimType(4)' style='font-size: 12px;' value="Random blink">
+        </td>
+        <td>
+          <input id="b25" class='notselected' type='button' onclick='SendAnimSpeed(30)' style='font-size: 12px;' value="Speed selection" disabled>
+        </td>
+      </tr>
+    </table>
+  </div>
   <script src="PageColorPicker.js"></script>
 </body>
 </html>
@@ -266,6 +296,52 @@ function SendRGBW() {
     console.log('Send: /sendrgbw?id=' + tid + '&r=' + tvalR + '&g=' + tvalG + '&b=' + tvalB + '&w=' + tvalW);
     var xhttp = new XMLHttpRequest();
     xhttp.open('GET', '/sendrgbw?id=' + tid + '&r=' + tvalR + '&g=' + tvalG + '&b=' + tvalB + '&w=' + tvalW, true);
+    xhttp.send();
+}
+
+function SendAnimType(animType) {
+	var tid = id + 1;
+	var tanimType = animType + 1;
+    console.log('Send: /sendrgbw?id=' + tid + '&at=' + tanimType);
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            var jsonObject = JSON.parse(this.responseText);
+            // var jsonObject = {"animType": 0, "animSpeed": 0}';
+            var vat = jsonObject.animType;
+            var vas = jsonObject.animSpeed;
+
+            // Set border
+            for (var j = 0; j < 6; j++) {
+                if (vat == j) {
+                    document.getElementById("b2" + j).className = "selected";
+                }
+                else {
+                    document.getElementById("b2" + j).className = "notselected";
+                }
+            }
+        }
+    };
+    xhttp.open('GET', '/sendrgbw?id=' + tid + '&at=' + tanimType, true);
+    xhttp.send();
+}
+
+function SendAnimSpeed(animSpeed) {
+	var tid = id + 1;
+	var tanimSpeed = animSpeed + 1;
+    console.log('Send: /sendrgbw?id=' + tid + '&as=' + tanimSpeed);
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            var jsonObject = JSON.parse(this.responseText);
+            // var jsonObject = {"animType": 0, "animSpeed": 0}';
+            var vat = jsonObject.animType;
+            var vas = jsonObject.animSpeed;
+
+            //
+        }
+    };
+    xhttp.open('GET', '/sendrgbw?id=' + tid + '&as=' + tanimSpeed, true);
     xhttp.send();
 }
 )=====";

@@ -193,31 +193,6 @@ function SendW(id, valW) {
     }
 }
 
-function SendAnim(anim) {
-    console.log('Send: /sendanim?anim=' + anim);
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-            var jsonObject = JSON.parse(this.responseText);
-            // var jsonObject = {"anim": 0, "speed": 0}';
-            var vanim = jsonObject.anim;
-            var vspeed = jsonObject.speed;
-
-            // Set border
-            for (var j = 0; j < 6; j++) {
-                if (vanim == j) {
-                    document.getElementById("b2" + j).className = "selected";
-                }
-                else {
-                    document.getElementById("b2" + j).className = "notselected";
-                }
-            }
-        }
-    };
-    xhttp.open('GET', '/sendanim?anim=' + anim, true);
-    xhttp.send();
-}
-
 function SendOnOff() {
     console.log('Send: /onoff');
     var xhttp = new XMLHttpRequest();
