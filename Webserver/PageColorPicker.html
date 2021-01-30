@@ -64,30 +64,21 @@
   <br>
   <div id="item">
     <p>Animations</p>
-    <table id="t3" class="table1">
-      <tr>
-        <th>
-          <input id="b20" class='notselected' type='button' onclick='SendAnimType(0)' style='font-size: 12px;' value="Nothing">
-        </th>
-        <th>
-          <input id="b21" class='notselected' type='button' onclick='SendAnimType(1)' style='font-size: 12px;' value="Rainbow">
-        </th>
-        <th>
-          <input id="b22" class='notselected' type='button' onclick='SendAnimType(2)' style='font-size: 12px;' value="Random">
-        </th>
-      </tr>
-      <tr>
-        <td>
-          <input id="b23" class='notselected' type='button' onclick='SendAnimType(3)' style='font-size: 12px;' value="Random smooth">
-        </td>
-        <td>
-          <input id="b24" class='notselected' type='button' onclick='SendAnimType(4)' style='font-size: 12px;' value="Random blink">
-        </td>
-        <td>
-          <input id="b25" class='notselected' type='button' onclick='SendAnimSpeed(30)' style='font-size: 12px;' value="Speed selection" disabled>
-        </td>
-      </tr>
-    </table>
+    <select id="animType" onchange="SelectAnimType()">
+		<option value="0">Nothing</option>
+		<option value="1">Rainbow</option>
+		<option value="2">Random</option>
+		<option value="3">Random smooth</option>
+		<option value="4">Random blink</option>
+	</select>
+	<select id="animSpeed" onchange="SelectAnimSpeed()">
+		<option value="" disabled selected>Select speed</option>
+		<option value="5">5</option>
+		<option value="15">15</option>
+		<option value="30">30</option>
+		<option value="45">45</option>
+		<option value="60">60</option>
+	</select>
   </div>
   <script src="PageColorPicker.js"></script>
 </body>
