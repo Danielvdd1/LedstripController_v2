@@ -204,6 +204,15 @@ void LedstripRGBW::animate(){
 	case 1:
 		animRainbow((animTime/animSpeed)%360);
 		break;
+	case 2:
+		animRandom((animTime/animSpeed)%360);
+		break;
+	case 3:
+		animRandomSmooth((animTime/animSpeed)%360);
+		break;
+	case 4:
+		animRandomBlink((animTime/animSpeed)%360);
+		break;
 	
 	default:
 		break;
@@ -211,6 +220,51 @@ void LedstripRGBW::animate(){
 }
 void LedstripRGBW::animRainbow(int animTime){
 	setValueHSV(animTime, 100, 100);
+}
+void LedstripRGBW::animRandom(int animTime){
+	static bool flag = false;
+	if(animTime % 180 < 90) {
+		if (!flag){
+			flag = true;
+
+			int hue = random(359);
+			setValueHSV(hue, 100, 100);
+		}
+	}else{
+		flag = false;
+	}
+}
+void LedstripRGBW::animRandomSmooth(int animTime){
+	static bool flag = false;
+	if(animTime % 180 < 90) {
+		if (!flag){
+			flag = true;
+
+			int hue = random(359);
+			setValueHSV(hue, 100, 100);
+			// Use colorTransition with hsv
+		}
+	}else{
+		flag = false;
+	}
+}
+void LedstripRGBW::animRandomBlink(int animTime){
+	static bool flag = false;
+	static int hue = 0;
+	if(animTime < 180) {
+		if (!flag){
+			flag = true;
+
+			hue = random(359);
+		}
+		byte value = map(animTime, 0, 179, 0, 100);
+		setValueHSV(hue, 100, value);
+	}else{
+		flag = false;
+
+		byte value = map(animTime, 180, 359, 100, 0);
+		setValueHSV(hue, 100, value);
+	}
 }
 
 // ====== LedstripW definitions

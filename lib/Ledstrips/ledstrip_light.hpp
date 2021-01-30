@@ -122,6 +122,9 @@ class LedstripRGBW: public Ledstrip{
 	int animType = 0;
 	int animSpeed = 30;
 	void animRainbow(int animTime);
+	void animRandom(int animTime);
+	void animRandomSmooth(int animTime);
+	void animRandomBlink(int animTime);
 };
 
 class LedstripW: public Ledstrip{
