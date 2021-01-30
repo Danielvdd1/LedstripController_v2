@@ -325,29 +325,6 @@ xhttp2.onreadystatechange = function () {
 xhttp2.open('GET', 'http://192.168.178.61/state', true);
 xhttp2.send();
 
-// Request value anim
-var xhttp4 = new XMLHttpRequest();
-xhttp4.onreadystatechange = function () {
-    if (this.readyState == 4 && this.status == 200) {
-        var jsonObject = JSON.parse(this.responseText);
-        // var jsonObject = {"anim": 0, "speed": 0}';
-        var vanim = jsonObject.anim;
-        var vspeed = jsonObject.speed;
-
-        // Set border
-        for (var j = 0; j < 6; j++) {
-            if (vanim == j) {
-                document.getElementById("b2" + j).className = "selected";
-            }
-            else {
-                document.getElementById("b2" + j).className = "notselected";
-            }
-        }
-    }
-};
-xhttp4.open('GET', '/sendanim', true);
-xhttp4.send();
-
 // Request value onoff
 var xhttp5 = new XMLHttpRequest();
 xhttp5.onreadystatechange = function () {
