@@ -68,18 +68,16 @@ bl::Button buttons[amountButton] = {bl::Button("Top button", D0), bl::Button("Mi
 
 
 
-/*
 // ----- Sunrise -----
-const long utcOffsetInSeconds = 3600; // UTC +1.00
+ll::LedstripRGBW *ledstripSunrise = &ledstripsRGBW[1];
+const long utcOffsetInSeconds = 3600; // UTC +1.00 // Todo: Summer/winter time change
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
 bool sunriseEnabled = true;
-int sunriseState = 0;
 int sunriseTime = 8 * 60 + 0; // Minutes
-const int sunriseDuration = 15; // Minutes // Not more than 59 minutes
-unsigned long previousMillis = 0;
+int sunriseDuration = 15; // Minutes // Not more than 59 minutes
+int sunriseState = 0;
 unsigned long  interval = 1000;
-*/
 
 
 
@@ -107,12 +105,9 @@ void HandleHSV();
 void HandleW();
 void ResetColors();
 
-/*
 void HandleSunrise();
-
 void Sunrise();
 void SunriseTransition(bool firstTime);
-*/
 
 void HandleOTA();
 void OTA();
@@ -189,11 +184,11 @@ void SetupServer()
 	server.on("/colorpicker", HandlePageColorPickerHTML);
 	server.on("/PageColorPicker.css", HandlePageColorPickerCSS);
 	server.on("/PageColorPicker.js", HandlePageColorPickerJS);
-	/*
+	
 	server.on("/sunrise", HandlePageSunriseHTML);
 	server.on("/PageSunrise.css", HandlePageSunriseCSS);
 	server.on("/PageSunrise.js", HandlePageSunriseJS);
-	*/
+	
 
 	server.on("/debug", HandleDebug);
 	server.on("/test", HandleTest);
@@ -202,7 +197,7 @@ void SetupServer()
 	server.on("/sendrgbw", HandleRGBW);
 	server.on("/sendhsv", HandleHSV);
 	server.on("/sendw", HandleW);
-	//server.on("/sendsunrise", HandleSunrise);
+	server.on("/sendsunrise", HandleSunrise);
 
 	server.on("/ota", HandleOTA);
 
@@ -215,7 +210,8 @@ void setup()
 	SetupOTA();
 	SetupServer();
 	
-	//timeClient.begin();
+	// Time for sunrise
+	timeClient.begin();
 }
 
 void loop()
@@ -230,9 +226,7 @@ void loop()
 		ledstrip.animate();
 	}
 
-
-	// Sunrise();
-	
+	Sunrise();
 }
 
 
@@ -280,7 +274,6 @@ void HandlePageColorPickerJS()
 	server.send(200, "text/js", js);
 }
 
-/*
 void HandlePageSunriseHTML()
 {
 	// /sunrise
@@ -298,7 +291,7 @@ void HandlePageSunriseJS()
 	String js = String(pageSunrise_js);
 	server.send(200, "text/js", js);
 }
-*/
+
 
 void HandleDebug()
 {
@@ -328,12 +321,9 @@ void HandleTest()
 	int valY = server.arg("y").toInt();
 	int valZ = server.arg("z").toInt();
 	String debugText = "x: " + String(valX) + ", y: " + String(valY) + ", z: " + String(valZ);
-	//debugText += "<br>";
+	debugText += "<br>";
 
-	
-	//ledstripsRGBW[0].colorTransition(255, 200, 0, 200, 6000);
-
-	ledstripsRGBW[0].setValueHSV(valX, valY, valZ);
+	debugText += "sunriseTime: " + String(sunriseTime) + ", sunriseDuration: " + String(sunriseDuration) + ", sunriseState: " + String(sunriseState);
 	
 	server.send(200, "text/html", debugText);
 }
@@ -372,8 +362,8 @@ void TurnOn() {
 }
 void TurnOff() {
 	onoff = false;
-	digitalWrite(PSUPin, LOW);
 	ResetColors();
+	digitalWrite(PSUPin, LOW);
 }
 
 
@@ -476,19 +466,36 @@ void ResetColors()
 	}
 }
 
-/*
+
 void HandleSunrise()
 {
 	// /sendsunrise?e=___&t=___
 	byte valE = server.arg("e").toInt();
-	//byte valT = server.arg("t").toInt();
+	byte valT = server.arg("t").toInt();
+	byte valD = server.arg("d").toInt();
 
-	if (valE == 1){
-		sunriseEnabled = true;
+	if (valE > 0){
+		valE = max(valE-1, 0);
+		if (valE > 0){
+			sunriseEnabled = true;
+		} else {
+			sunriseEnabled = false;
+			sunriseState = 0;
+		}
 	}
-	else if (valE == 2) {
-		sunriseEnabled = false;
-		sunriseState = 0;
+
+	if (valT > 0){
+		valT = min(max(valT-1, 0), 24 * 60 - 1); // Minutes
+		
+		// Set time variable
+		sunriseTime = valT;
+	}
+
+	if (valD > 0){
+		valD = min(max(valD-1, 0), 60 - 1); // Minutes
+		
+		// Set duration variable
+		sunriseDuration = valD;
 	}
 
 	server.send(200, "text/json", sunriseEnabled ? "1" : "0");
@@ -500,6 +507,7 @@ void Sunrise()
 	}
 
 	unsigned long currentMillis = millis();
+	static unsigned long previousMillis = 0;
 
 	if (sunriseState == 0){ // Calculate hours to wait
 		timeClient.update();
@@ -515,7 +523,6 @@ void Sunrise()
 		
 		sunriseState = 1;
 	}
-
 	if (sunriseState == 1){ // Wait hours
 		if (currentMillis - previousMillis >= interval) {
 			previousMillis = currentMillis;
@@ -539,7 +546,6 @@ void Sunrise()
 
 		sunriseState = 3;
 	}
-
 	if (sunriseState == 3){ // Wait minutes
 		if (currentMillis - previousMillis >= interval) {
 			previousMillis = currentMillis;
@@ -548,23 +554,41 @@ void Sunrise()
 		}
 	}
 
+	unsigned long delayTime1 = roundf(sunriseDuration * 60 * 1000 * 0.8);
+	unsigned long delayTime2 = roundf(sunriseDuration * 60 * 1000 * 0.2);
+
 	if (sunriseState == 4){ // Set sunrise transition
-		SunriseTransition(true);
+		ledstripSunrise->setAnimType(0);
+		ledstripSunrise->setValue(0, 0, 0, 0);
+		ledstripSunrise->colorTransition(255, 70, 0, 0, delayTime1);
 		sunriseState = 5;
 	}
+	if (sunriseState == 5){ // Wait for sunrise transition
+		if (currentMillis - previousMillis >= delayTime1) {
+			previousMillis = currentMillis;
 
-	if (sunriseState == 5 || sunriseState == 6){ // Do sunrise transition
-		SunriseTransition(false);
+			sunriseState = 6;
+		}
 	}
-	// 5 -> 6 in SunriseTransition function
+
+	if (sunriseState == 6){ // Set sunrise transition
+		ledstripSunrise->colorTransition(200, 70, 0, 200, delayTime2);
+		sunriseState = 7;
+	}
+	if (sunriseState == 7){ // Wait for sunrise transition
+		if (currentMillis - previousMillis >= delayTime2) {
+			previousMillis = currentMillis;
+
+			sunriseState = 8;
+		}
+	}
 	
-	if (sunriseState == 7){ // Calculate safety delay to avoid double sunrise
-		interval = 3600 * 1000;
+	if (sunriseState == 8){ // Calculate safety delay to avoid double sunrise
+		interval = 60 * 60 * 1000; // Wait one hour
 
-		sunriseState = 8;
+		sunriseState = 9;
 	}
-
-	if (sunriseState == 8){ // Wait safety delay
+	if (sunriseState == 9){ // Wait safety delay
 		if (currentMillis - previousMillis >= interval) {
 			previousMillis = currentMillis;
 
@@ -572,77 +596,77 @@ void Sunrise()
 		}
 	}
 }
-void SunriseTransition(bool firstTime)
-{
-	const unsigned long delayTime1 = roundf(sunriseDuration * 60 * 1000 * 0.8);
-	const unsigned long delayTime2 = roundf(sunriseDuration * 60 * 1000 * 0.2);
-	static unsigned long startTime;
+// void SunriseTransition(bool firstTime)
+// {
+// 	const unsigned long delayTime1 = roundf(sunriseDuration * 60 * 1000 * 0.8);
+// 	const unsigned long delayTime2 = roundf(sunriseDuration * 60 * 1000 * 0.2);
+// 	static unsigned long startTime;
 
-	static byte oldValueRGBW[4];
+// 	static byte oldValueRGBW[4];
 
-	if (firstTime)
-	{
-		animActive = 0; // Turn off animation
-		if (!onoff) TurnOn();
+// 	if (firstTime)
+// 	{
+// 		ledstripsSunrise->setAnimType(0);
+// 		if (!onoff) TurnOn();
 
-		newValueRGBW[1][0] = 255;
-		newValueRGBW[1][1] = 70;
-		newValueRGBW[1][2] = 0;
-		newValueRGBW[1][3] = 0;
+// 		newValueRGBW[1][0] = 255;
+// 		newValueRGBW[1][1] = 70;
+// 		newValueRGBW[1][2] = 0;
+// 		newValueRGBW[1][3] = 0;
 
-		startTime = millis();
-		oldValueRGBW[0] = valueRGBW[1][0];
-		oldValueRGBW[1] = valueRGBW[1][1];
-		oldValueRGBW[2] = valueRGBW[1][2];
-		oldValueRGBW[3] = valueRGBW[1][3];
-	}
+// 		startTime = millis();
+// 		oldValueRGBW[0] = valueRGBW[1][0];
+// 		oldValueRGBW[1] = valueRGBW[1][1];
+// 		oldValueRGBW[2] = valueRGBW[1][2];
+// 		oldValueRGBW[3] = valueRGBW[1][3];
+// 	}
 
-	unsigned long timeDifference = millis() - startTime;
+// 	unsigned long timeDifference = millis() - startTime;
 
-	if (sunriseState == 5){
-		if (timeDifference < delayTime1)
-		{
-			valueRGBW[1][0] = map(timeDifference, 0, delayTime1, oldValueRGBW[0], newValueRGBW[1][0]);
-			valueRGBW[1][1] = map(timeDifference, 0, delayTime1, oldValueRGBW[1], newValueRGBW[1][1]);
-			valueRGBW[1][2] = map(timeDifference, 0, delayTime1, oldValueRGBW[2], newValueRGBW[1][2]);
-			valueRGBW[1][3] = map(timeDifference, 0, delayTime1, oldValueRGBW[3], newValueRGBW[1][3]);
-		}
+// 	if (sunriseState == 5){
+// 		if (timeDifference < delayTime1)
+// 		{
+// 			valueRGBW[1][0] = map(timeDifference, 0, delayTime1, oldValueRGBW[0], newValueRGBW[1][0]);
+// 			valueRGBW[1][1] = map(timeDifference, 0, delayTime1, oldValueRGBW[1], newValueRGBW[1][1]);
+// 			valueRGBW[1][2] = map(timeDifference, 0, delayTime1, oldValueRGBW[2], newValueRGBW[1][2]);
+// 			valueRGBW[1][3] = map(timeDifference, 0, delayTime1, oldValueRGBW[3], newValueRGBW[1][3]);
+// 		}
 
-		if (timeDifference >= delayTime1)
-		{
-			sunriseState = 6;
-			timeDifference = 0;
+// 		if (timeDifference >= delayTime1)
+// 		{
+// 			sunriseState = 6;
+// 			timeDifference = 0;
 
-			newValueRGBW[1][0] = 200;
-			newValueRGBW[1][1] = 70;
-			newValueRGBW[1][2] = 0;
-			newValueRGBW[1][3] = 255;
+// 			newValueRGBW[1][0] = 200;
+// 			newValueRGBW[1][1] = 70;
+// 			newValueRGBW[1][2] = 0;
+// 			newValueRGBW[1][3] = 255;
 
-			startTime = millis();
-			oldValueRGBW[0] = valueRGBW[1][0];
-			oldValueRGBW[1] = valueRGBW[1][1];
-			oldValueRGBW[2] = valueRGBW[1][2];
-			oldValueRGBW[3] = valueRGBW[1][3];
-		}
-	}
+// 			startTime = millis();
+// 			oldValueRGBW[0] = valueRGBW[1][0];
+// 			oldValueRGBW[1] = valueRGBW[1][1];
+// 			oldValueRGBW[2] = valueRGBW[1][2];
+// 			oldValueRGBW[3] = valueRGBW[1][3];
+// 		}
+// 	}
 	
-	if (sunriseState == 6){
-		if (timeDifference < delayTime2)
-		{
-			valueRGBW[1][0] = map(timeDifference, 0, delayTime2, oldValueRGBW[0], newValueRGBW[1][0]);
-			valueRGBW[1][1] = map(timeDifference, 0, delayTime2, oldValueRGBW[1], newValueRGBW[1][1]);
-			valueRGBW[1][2] = map(timeDifference, 0, delayTime2, oldValueRGBW[2], newValueRGBW[1][2]);
-			valueRGBW[1][3] = map(timeDifference, 0, delayTime2, oldValueRGBW[3], newValueRGBW[1][3]);
-		}
-		if (timeDifference >= delayTime2)
-		{
-			sunriseState = 7;
-		}
-	}
+// 	if (sunriseState == 6){
+// 		if (timeDifference < delayTime2)
+// 		{
+// 			valueRGBW[1][0] = map(timeDifference, 0, delayTime2, oldValueRGBW[0], newValueRGBW[1][0]);
+// 			valueRGBW[1][1] = map(timeDifference, 0, delayTime2, oldValueRGBW[1], newValueRGBW[1][1]);
+// 			valueRGBW[1][2] = map(timeDifference, 0, delayTime2, oldValueRGBW[2], newValueRGBW[1][2]);
+// 			valueRGBW[1][3] = map(timeDifference, 0, delayTime2, oldValueRGBW[3], newValueRGBW[1][3]);
+// 		}
+// 		if (timeDifference >= delayTime2)
+// 		{
+// 			sunriseState = 7;
+// 		}
+// 	}
 
-	SetColors(1);
-}
-*/
+// 	SetColors(1);
+// }
+
 
 void HandleOTA()
 {
