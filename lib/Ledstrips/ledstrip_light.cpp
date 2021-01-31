@@ -79,17 +79,20 @@ void LedstripRGB::setValue(int valR, int valG, int valB){
 
 LedstripRGBW::LedstripRGBW(String name, Adafruit_PWMServoDriver &pwmDriver, int pinR, int pinG, int pinB, int pinW): 
 	Ledstrip(name), 
-	gpio{GPIO_Out_PWMServoDriver(pwmDriver, pinR), GPIO_Out_PWMServoDriver(pwmDriver, pinG), GPIO_Out_PWMServoDriver(pwmDriver, pinB), GPIO_Out_PWMServoDriver(pwmDriver, pinW)},
-	transition(false),
-	transitionTime(0),
-	startTime(0),
-	valOldRGBW{0,0,0,0},
-	valNewRGBW{0,0,0,0}
+	gpio{GPIO_Out_PWMServoDriver(pwmDriver, pinR), GPIO_Out_PWMServoDriver(pwmDriver, pinG), GPIO_Out_PWMServoDriver(pwmDriver, pinB), GPIO_Out_PWMServoDriver(pwmDriver, pinW)}
 {
 }
 
 String LedstripRGBW::getInfo(){
-	String json = "{\"name\": \"" + name + "\", \"r\": " + String(gpio[0].getValue()) + ", \"g\": " + String(gpio[1].getValue()) + ", \"b\": " + String(gpio[2].getValue()) + ", \"w\": " + String(gpio[3].getValue()) + ", \"isTransitioning\": " + String(isTransitioning()) + "}";
+	String json = "{\"name\": \"" + name + 
+	"\", \"r\": " + String(gpio[0].getValue()) + 
+	", \"g\": " + String(gpio[1].getValue()) + 
+	", \"b\": " + String(gpio[2].getValue()) + 
+	", \"w\": " + String(gpio[3].getValue()) + 
+	", \"transition\": " + String(transition) + 
+	", \"animType\": " + String(animType) + 
+	", \"animSpeed\": " + String(animSpeed) + 
+	"}";
 	return json;
 }
 
@@ -106,6 +109,48 @@ void LedstripRGBW::setValue(int valR, int valG, int valB, int valW){
 	gpio[1].setValue(valG);
 	gpio[2].setValue(valB);
 	gpio[3].setValue(valW);
+}
+
+void LedstripRGBW::setValueHSV(int h, int s, int v){
+	if (!(0 <= h && h < 360) || !(0 <= s && s <= 100) || !(0 <= v && v <= 100))
+		return;
+
+	float s2 = s/100.0;
+	float v2 = v/100.0;
+	float r2 = 0;
+	float g2 = 0;
+	float b2 = 0;
+	
+	float c = v2 * s2;
+	float x = c * (1 - fabs(fmod((h/60.0),2) - 1));
+	float m = v2 - c;
+
+	if (0 <= h && h < 60){
+		r2 = c; g2 = x; b2 = 0;
+	}
+	else if (60 <= h && h < 120){
+		r2 = x; g2 = c; b2 = 0;
+	}
+	else if (120 <= h && h < 180){
+		r2 = 0; g2 = c; b2 = x;
+	}
+	else if (180 <= h && h < 240){
+		r2 = 0; g2 = x; b2 = c;
+	}
+	else if (240 <= h && h < 300){
+		r2 = x; g2 = 0; b2 = c;
+	}
+	else if (300 <= h && h < 360){
+		r2 = c; g2 = 0; b2 = x;
+	}
+
+	int r = (r2+m)*255;
+	int g = (g2+m)*255;
+	int b = (b2+m)*255;
+
+	gpio[0].setValue(r);
+	gpio[1].setValue(g);
+	gpio[2].setValue(b);
 }
 
 void LedstripRGBW::colorTransition(int valNewR, int valNewG, int valNewB, int valNewW, unsigned long transitionTime)
@@ -138,9 +183,88 @@ void LedstripRGBW::colorTransitionUpdate()
 		}
 	}
 }
-bool LedstripRGBW::isTransitioning()
-{
-	return transition;
+
+void LedstripRGBW::setAnimType(int type){
+	if (type <= 0){
+		animType = 0;
+	}
+	else{
+		animType = type;
+	}
+}
+void LedstripRGBW::setAnimSpeed(int speed){
+	if (true) // set conditions
+		animSpeed = speed;
+}
+void LedstripRGBW::animate(){
+	unsigned long animTime = millis();
+
+	switch (animType)
+	{
+	case 1:
+		animRainbow((animTime/animSpeed)%360);
+		break;
+	case 2:
+		animRandom((animTime/animSpeed)%360);
+		break;
+	case 3:
+		animRandomSmooth((animTime/animSpeed)%360);
+		break;
+	case 4:
+		animRandomBlink((animTime/animSpeed)%360);
+		break;
+	
+	default:
+		break;
+	}
+}
+void LedstripRGBW::animRainbow(int animTime){
+	setValueHSV(animTime, 100, 100);
+}
+void LedstripRGBW::animRandom(int animTime){
+	static bool flag = false;
+	if(animTime % 180 < 90) {
+		if (!flag){
+			flag = true;
+
+			int hue = random(359);
+			setValueHSV(hue, 100, 100);
+		}
+	}else{
+		flag = false;
+	}
+}
+void LedstripRGBW::animRandomSmooth(int animTime){
+	static bool flag = false;
+	if(animTime % 180 < 90) {
+		if (!flag){
+			flag = true;
+
+			int hue = random(359);
+			setValueHSV(hue, 100, 100);
+			// Use colorTransition with hsv
+		}
+	}else{
+		flag = false;
+	}
+}
+void LedstripRGBW::animRandomBlink(int animTime){
+	static bool flag = false;
+	static int hue = 0;
+	if(animTime < 180) {
+		if (!flag){
+			flag = true;
+
+			hue = random(359);
+		}
+		byte value = map(animTime, 0, 179, 0, 100);
+		setValueHSV(hue, 100, value);
+	}else{
+		flag = false;
+
+		byte value = map(animTime, 180, 359, 100, 0);
+		setValueHSV(hue, 100, value);
+	}
 }
 
 // ====== LedstripW definitions

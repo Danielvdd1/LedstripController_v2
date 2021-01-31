@@ -62,6 +62,27 @@ const char* pageColorPicker_html PROGMEM = R"=====(
     <input class='button' type='button' onclick='SendRGBW()' style='width:140px; height:60px' value="Send">
     <p id='textRGBW'>0 0 0 0</p>
   </center>
+  <br>
+  <br>
+  <br>
+  <div id="item">
+    <p>Animations</p>
+    <select id="animType" onchange="SelectAnimType()">
+		<option value="0">Nothing</option>
+		<option value="1">Rainbow</option>
+		<option value="2">Random</option>
+		<option value="3">Random smooth</option>
+		<option value="4">Random blink</option>
+	</select>
+	<select id="animSpeed" onchange="SelectAnimSpeed()">
+		<option value="" disabled selected>Select speed</option>
+		<option value="5">5</option>
+		<option value="15">15</option>
+		<option value="30">30</option>
+		<option value="45">45</option>
+		<option value="60">60</option>
+	</select>
+  </div>
   <script src="PageColorPicker.js"></script>
 </body>
 </html>
@@ -201,13 +222,15 @@ var xhttp0 = new XMLHttpRequest();
 xhttp0.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
         var jsonArray = JSON.parse(this.responseText);
-        // var jsonArray = '[{"name": "", "r": 0, "g": 0, "b": 0, "w": 0, "isTransitioning": 0},...]';
+        // var jsonArray = '[{"name": "", "r": 0, "g": 0, "b": 0, "w": 0, "transition": 0, "animType": 0, "animSpeed": 0},...]';
         var jsonObject = jsonArray[id];
 		var valname = jsonObject.name;
 		valR = jsonObject.r;
         valG = jsonObject.g;
         valB = jsonObject.b;
         valW = jsonObject.w;
+		var vat = jsonObject.animType;
+		var vas = jsonObject.animSpeed;
 		//var valIsTransitioning = jsonObject.isTransitioning;
 		
         outputR.innerHTML = valR;
@@ -220,7 +243,12 @@ xhttp0.onreadystatechange = function () {
         sliderB.value = valB;
         sliderW.value = valW;
 
-        Update();
+		Update();
+		
+		// Select animType item
+		document.getElementById("animType").children[vat].selected = true;
+		// Select animSpeed item
+		//document.getElementById("animSpeed").children[?].selected = true;
     }
 };
 xhttp0.open('GET', '/sendrgbw', true);
@@ -266,6 +294,58 @@ function SendRGBW() {
     console.log('Send: /sendrgbw?id=' + tid + '&r=' + tvalR + '&g=' + tvalG + '&b=' + tvalB + '&w=' + tvalW);
     var xhttp = new XMLHttpRequest();
     xhttp.open('GET', '/sendrgbw?id=' + tid + '&r=' + tvalR + '&g=' + tvalG + '&b=' + tvalB + '&w=' + tvalW, true);
+    xhttp.send();
+}
+
+function SelectAnimType(){ // Note: There are multiple ways to to make eventlisteners. https://www.w3schools.com/jsref/event_onchange.asp
+	var animType = document.getElementById("animType").value;
+	animType = parseInt(animType);
+	SendAnimType(animType);
+}
+function SendAnimType(animType) {
+	var tid = id + 1;
+	var tanimType = animType + 1;
+    console.log('Send: /sendrgbw?id=' + tid + '&at=' + tanimType);
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            var jsonObject = JSON.parse(this.responseText);
+            // var jsonObject = {"animType": 0, "animSpeed": 0}';
+            var vat = jsonObject.animType;
+            var vas = jsonObject.animSpeed;
+
+            // Select animType item
+            //document.getElementById("animType").children[vat].selected = true;
+			// Select animSpeed item
+			//document.getElementById("animSpeed").children[?].selected = true;
+        }
+    };
+    xhttp.open('GET', '/sendrgbw?id=' + tid + '&at=' + tanimType, true);
+    xhttp.send();
+}
+
+// Change this to a textfield
+function SelectAnimSpeed(){
+	var animSpeed = document.getElementById("animSpeed").value;
+	animSpeed = parseInt(animSpeed);
+	SendAnimSpeed(animSpeed);
+}
+function SendAnimSpeed(animSpeed) {
+	var tid = id + 1;
+	var tanimSpeed = animSpeed + 1;
+    console.log('Send: /sendrgbw?id=' + tid + '&as=' + tanimSpeed);
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            var jsonObject = JSON.parse(this.responseText);
+            // var jsonObject = {"animType": 0, "animSpeed": 0}';
+            var vat = jsonObject.animType;
+            var vas = jsonObject.animSpeed;
+
+            //
+        }
+    };
+    xhttp.open('GET', '/sendrgbw?id=' + tid + '&as=' + tanimSpeed, true);
     xhttp.send();
 }
 )=====";

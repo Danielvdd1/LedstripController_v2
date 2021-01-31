@@ -100,27 +100,31 @@ class LedstripRGBW: public Ledstrip{
     void turnOn();
     void turnOff();
     void setValue(int valR, int valG, int valB, int valW);
+    void setValueHSV(int h, int s, int l); // 360°, 100%, 100%
 
 	void colorTransition(int valNewR, int valNewG, int valNewB, int valNewW, unsigned long transitionTime = 1000);
 	void colorTransitionUpdate();
-	bool isTransitioning();
 
-	//void setAnimType(int);
-	//void setAnimSpeed(int);
-	//void animate();
+	void setAnimType(int type); // Use enum
+	void setAnimSpeed(int speed);
+	void animate();
 
 	
   protected:
   	GPIO_Out_PWMServoDriver gpio[4];
 
-	bool transition;
-	unsigned long transitionTime;
-	unsigned long startTime;
-	int valOldRGBW[4];
-	int valNewRGBW[4];
+	bool transition = false;
+	unsigned long transitionTime = 0;
+	unsigned long startTime = 0;
+	int valOldRGBW[4] = {0,0,0,0};
+	int valNewRGBW[4] = {0,0,0,0};
 
-	//int animType;
-	//int animSpeed;
+	int animType = 0;
+	int animSpeed = 30;
+	void animRainbow(int animTime);
+	void animRandom(int animTime);
+	void animRandomSmooth(int animTime);
+	void animRandomBlink(int animTime);
 };
 
 class LedstripW: public Ledstrip{

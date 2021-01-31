@@ -4,7 +4,7 @@
 	Project: Ledstrip controller
 */
 
-// Libraries
+// ----- Libraries -----
 #include <Arduino.h> // Required for Visual Studio Code
 
 #include <ESP8266WiFi.h>
@@ -23,7 +23,7 @@
 #include <WiFiUdp.h>
 
 
-// Wifi settings
+// ----- Wifi settings -----
 // Wificredentials are handled by WifiManager library
 ESP8266WebServer server(80);
 
@@ -59,6 +59,7 @@ const byte amount = amountRGB + amountRGBW + amountW + amountRemote;
 ll::Ledstrip *ledstrips[amount];
 
 
+// ----- Buttons -----
 #include "button.hpp"
 namespace bl = button_lib;
 
@@ -68,10 +69,7 @@ bl::Button buttons[amountButton] = {bl::Button("Top button", D0), bl::Button("Mi
 
 
 /*
-byte animActive;
-byte animSpeed = 30; // 4=1sec, 8=2sec, 20=5sec, 40=10sec
-
-// Sunrise
+// ----- Sunrise -----
 const long utcOffsetInSeconds = 3600; // UTC +1.00
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
@@ -85,7 +83,7 @@ unsigned long  interval = 1000;
 
 
 
-// Functions
+// ----- Functions -----
 void HandlePageMainHTML();
 void HandlePageMainCSS();
 void HandlePageMainJS();
@@ -105,16 +103,16 @@ void TurnOn();
 void TurnOff();
 
 void HandleRGBW();
+void HandleHSV();
 void HandleW();
 void ResetColors();
 
-void HandleAnim();
+/*
 void HandleSunrise();
 
-void ColorTransition(byte i, bool firstTime);
-void ColorAnimation(byte anim);
 void Sunrise();
 void SunriseTransition(bool firstTime);
+*/
 
 void HandleOTA();
 void OTA();
@@ -202,15 +200,14 @@ void SetupServer()
 
 	server.on("/onoff", HandleOnOff);
 	server.on("/sendrgbw", HandleRGBW);
+	server.on("/sendhsv", HandleHSV);
 	server.on("/sendw", HandleW);
-	//server.on("/sendanim", HandleAnim);
 	//server.on("/sendsunrise", HandleSunrise);
 
 	server.on("/ota", HandleOTA);
 
 	server.begin();
 }
-
 void setup()
 {
 	SetupIO();
@@ -230,12 +227,9 @@ void loop()
 	for (auto &ledstrip : ledstripsRGBW)
 	{
 		ledstrip.colorTransitionUpdate();
+		ledstrip.animate();
 	}
 
-
-	// if (animActive > 0) {
-	// 	ColorAnimation(animActive);
-	// }
 
 	// Sunrise();
 	
@@ -329,11 +323,19 @@ void HandleDebug()
 }
 void HandleTest()
 {
-	// /test
+	// /test?x=___&y=___&z=___
+	int valX = server.arg("x").toInt();
+	int valY = server.arg("y").toInt();
+	int valZ = server.arg("z").toInt();
+	String debugText = "x: " + String(valX) + ", y: " + String(valY) + ", z: " + String(valZ);
+	//debugText += "<br>";
 
-	ledstripsRGBW[0].colorTransition(255, 200, 0, 200, 6000);
+	
+	//ledstripsRGBW[0].colorTransition(255, 200, 0, 200, 6000);
 
-	server.send(200, "text/html", "Not used");
+	ledstripsRGBW[0].setValueHSV(valX, valY, valZ);
+	
+	server.send(200, "text/html", debugText);
 }
 
 
@@ -377,19 +379,60 @@ void TurnOff() {
 
 void HandleRGBW()
 {
-	// /sendrgbw?id=___&r=___&g=___&b=___&w=___
+	// /sendrgbw?id=___&r=___&g=___&b=___&w=___&at=___&as=___
 	int valId = server.arg("id").toInt(); valId = valId-1;
-	int valR = server.arg("r").toInt(); if (valR > 0) valR = min(max(valR-1, 0), 255);
-	int valG = server.arg("g").toInt(); if (valG > 0) valG = min(max(valG-1, 0), 255);
-	int valB = server.arg("b").toInt(); if (valB > 0) valB = min(max(valB-1, 0), 255);
-	int valW = server.arg("w").toInt(); if (valW > 0) valW = min(max(valW-1, 0), 255);
+	int valR = server.arg("r").toInt(); if (valR > 0) {valR = min(max(valR-1, 0), 255);}
+	int valG = server.arg("g").toInt(); if (valG > 0) {valG = min(max(valG-1, 0), 255);}
+	int valB = server.arg("b").toInt(); if (valB > 0) {valB = min(max(valB-1, 0), 255);}
+	int valW = server.arg("w").toInt(); if (valW > 0) {valW = min(max(valW-1, 0), 255);}
+	int valAT = server.arg("at").toInt();
+	int valAS = server.arg("as").toInt();
 
 	if (valId >= 0 && valId < amountRGBW)
 	{
 		if (!onoff) TurnOn();
 
-		//ledstripsRGBW[valId].setValue(valR, valG, valB, valW);
-		ledstripsRGBW[valId].colorTransition(valR, valG, valB, valW);
+		if (valAT > 0 || valAS > 0){ // Something with animation
+			if (valAT > 0){
+				valAT = max(valAT-1, 0);
+				ledstripsRGBW[valId].setAnimType(valAT);
+			}
+			if (valAS > 0){
+				valAS = max(valAS-1, 1);
+				ledstripsRGBW[valId].setAnimSpeed(valAS);
+			}
+		}
+		else{
+			ledstripsRGBW[valId].setAnimType(0); // Turn of animation
+
+			//ledstripsRGBW[valId].setValue(valR, valG, valB, valW);
+			ledstripsRGBW[valId].colorTransition(valR, valG, valB, valW);
+		}
+	}
+
+	String json = "[";
+	for (int i = 0; i < amountRGBW; i++)
+	{
+		json += ledstripsRGBW[i].getInfo();
+		if (i < amountRGBW - 1) json += ",";
+	}
+	json += "]";
+	server.send(200, "text/json", json);
+}
+void HandleHSV()
+{
+	// /sendhsv?id=___&h=___&s=___&v=___ //&w=___
+	int valId = server.arg("id").toInt(); valId = valId-1;
+	int valH = server.arg("h").toInt(); if (valH > 0) valH = min(max(valH-1, 0), 359);
+	int valS = server.arg("s").toInt(); if (valS > 0) valS = min(max(valS-1, 0), 100);
+	int valV = server.arg("v").toInt(); if (valV > 0) valV = min(max(valV-1, 0), 100);
+	//int valW = server.arg("w").toInt(); if (valW > 0) valW = min(max(valW-1, 0), 255);
+
+	if (valId >= 0 && valId < amountRGBW)
+	{
+		if (!onoff) TurnOn();
+
+		ledstripsRGBW[valId].setValueHSV(valH, valS, valV);
 	}
 
 	String json = "[";
@@ -434,173 +477,6 @@ void ResetColors()
 }
 
 /*
-void HandleAnim()
-{
-	// /sendanim?anim=___&speed=___
-	byte valAnim = server.arg("anim").toInt();
-	byte valSpeed = server.arg("speed").toInt();
-
-	if (valAnim > 0) {
-		animActive = --valAnim;
-		if (!onoff) TurnOn();
-	}
-
-	if (valSpeed > 0) {
-		animSpeed = valSpeed;
-	}
-
-	String json = "{\"anim\": " + String(animActive) + ", \"speed\": " + String(animSpeed) + "}";
-	server.send(200, "text/json", json);
-}
-
-void Wheel(int i, byte wheelPos) { // https://github.com/adafruit/Adafruit_NeoPixel/blob/master/examples/strandtest_wheel/strandtest_wheel.ino
-	wheelPos = 255 - wheelPos;
-	if(wheelPos < 85) {
-		// {255 - wheelPos * 3, 0, wheelPos * 3};
-		newValueRGBW[i][0] = 255 - wheelPos * 3;
-		newValueRGBW[i][1] = 0;
-		newValueRGBW[i][2] = wheelPos * 3;
-		newValueRGBW[i][3] = 0;
-	}
-	else if(wheelPos < 170) {
-		wheelPos -= 85;
-		//{0, wheelPos * 3, 255 - wheelPos * 3};
-		newValueRGBW[i][0] = 0;
-		newValueRGBW[i][1] = wheelPos * 3;
-		newValueRGBW[i][2] = 255 - wheelPos * 3;
-		newValueRGBW[i][3] = 0;
-	}
-	else {
-		wheelPos -= 170;
-		//{wheelPos * 3, 255 - wheelPos * 3, 0};
-		newValueRGBW[i][0] = wheelPos * 3;
-		newValueRGBW[i][1] = 255 - wheelPos * 3;
-		newValueRGBW[i][2] = 0;
-		newValueRGBW[i][3] = 0;
-	}
-}
-void animRainbow(int i, byte wheelPos) {
-	Wheel(i, wheelPos);
-	for (byte j = 0; j < 4; j++)
-	{
-		valueRGBW[i][j] = newValueRGBW[i][j];
-	}
-}
-void animRandom(int i, byte wheelPos) {
-	wheelPos = 255 - wheelPos;
-	static byte lastWheelPos[2] = {0,0};
-	if(wheelPos % 85 < 43) {
-		if (lastWheelPos[i] % 85 >= 43){
-			lastWheelPos[i] = wheelPos;
-
-			byte wheelPos2 = random(255);
-			Wheel(i, wheelPos2);
-
-			for (byte j = 0; j < 4; j++)
-			{
-				valueRGBW[i][j] = newValueRGBW[i][j];
-			}
-		}
-	}else{
-		if(lastWheelPos[i] % 85 < 43) {
-			lastWheelPos[i] = wheelPos;
-
-			// byte wheelPos2 = random(255);
-			// Wheel(i, wheelPos2);
-
-			// for (byte j = 0; j < 4; j++)
-			// {
-			//   valueRGBW[i][j] = newValueRGBW[i][j];
-			// }
-		}
-	}
-}
-void animRandomSmooth(int i, byte wheelPos) {
-	wheelPos = 255 - wheelPos;
-	static byte lastWheelPos[2] = {0,0};
-	if(wheelPos % 85 < 43) {
-		if (lastWheelPos[i] % 85 >= 43){
-			lastWheelPos[i] = wheelPos;
-
-			byte wheelPos2 = random(255);
-			Wheel(i, wheelPos2);
-
-			ColorTransition(i, true);
-		}
-	}else{
-		if(lastWheelPos[i] % 85 < 43) {
-			lastWheelPos[i] = wheelPos;
-
-			//byte wheelPos2 = random(255);
-			//wheel(i, wheelPos2);
-		}
-	}
-}
-void animRandomBlink(int i, byte wheelPos) {
-	wheelPos = 255 - wheelPos;
-	static byte lastWheelPos[2] = {0,0};
-	if(wheelPos % 85 < 43) {
-		if (lastWheelPos[i] % 85 >= 43){
-			lastWheelPos[i] = wheelPos;
-
-			//byte wheelPos2 = random(255);
-			//Wheel(i, wheelPos2);
-		}
-		for (byte j = 0; j < 4; j++)
-		{
-			valueRGBW[i][j] = map(wheelPos % 85, 0, 43, 0, newValueRGBW[i][j]);
-		}
-	}else{
-		if(lastWheelPos[i] % 85 < 43) {
-			lastWheelPos[i] = wheelPos;
-
-			byte wheelPos2 = random(256);
-			Wheel(i, wheelPos2);
-		}
-		for (byte j = 0; j < 4; j++)
-		{
-			valueRGBW[i][j] = map(wheelPos % 85, 44, 85, newValueRGBW[i][j], 0);
-		}
-	}
-}
-
-void ColorAnimation(byte anim)
-{
-	unsigned long animTime = millis();
-	byte animTime2 = (animTime/animSpeed) % 255;
-
-
-	switch (anim)
-	{
-	case 1: // Rainbow
-		animRainbow(0, animTime2);
-		animRainbow(1, animTime2);
-		SetColors(0);
-		SetColors(1);
-		break;
-	case 2: // Random
-		animRandom(0, animTime2);
-		animRandom(1, animTime2);
-		SetColors(0);
-		SetColors(1);
-		break;
-	case 3: // Random smooth
-		animRandomSmooth(0, animTime2);
-		animRandomSmooth(1, animTime2);
-		//SetColors(0);
-		//SetColors(1);
-		break;
-	case 4: // Random blink
-		animRandomBlink(0, animTime2);
-		animRandomBlink(1, animTime2);
-		SetColors(0);
-		SetColors(1);
-		break;
-	default:
-		break;
-	}
-}
-
 void HandleSunrise()
 {
 	// /sendsunrise?e=___&t=___
