@@ -403,6 +403,8 @@ void HandleRGBW()
 			}
 		}
 		else{
+			ledstripsRGBW[valId].setAnimType(0); // Turn of animation
+
 			//ledstripsRGBW[valId].setValue(valR, valG, valB, valW);
 			ledstripsRGBW[valId].colorTransition(valR, valG, valB, valW);
 		}
