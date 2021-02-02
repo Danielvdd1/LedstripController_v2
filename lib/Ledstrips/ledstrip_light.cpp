@@ -359,7 +359,7 @@ LedstripRemote::LedstripRemote(String name, String urlOn, String urlOff): Ledstr
 }
 
 String LedstripRemote::getInfo(){
-	String json = "{\"name\": \"" + name + "\", \"value\": \"" + String(getValue()) + "\", \"urlOn\": \"" + urlOn + "\", \"urlOff\": \"" + urlOff + "\"}";
+	String json = "{\"name\": \"" + name + "\", \"value\": " + String(getValue()) + ", \"urlOn\": \"" + urlOn + "\", \"urlOff\": \"" + urlOff + "\"}";
 	return json;
 }
 
