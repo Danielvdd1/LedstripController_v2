@@ -98,6 +98,7 @@ void HandleTest();
 void HandleOnOff();
 void TurnOnOff();
 void TurnOn();
+void TurnOn2();
 void TurnOff();
 
 void HandleRGBW();
@@ -347,7 +348,7 @@ void TurnOnOff() {
 
 	if (onoff)
 	{
-		TurnOn();
+		TurnOn2();
 	}
 	else
 	{
@@ -357,6 +358,9 @@ void TurnOnOff() {
 void TurnOn() {
 	onoff = true;
 	digitalWrite(PSUPin, HIGH);
+}
+void TurnOn2() {
+	TurnOn();
 	//ledstripsRGBW[0].setValue(0,0,0,255);
 	ledstripsRGBW[0].colorTransition(0,0,0,255);
 }
@@ -558,6 +562,7 @@ void Sunrise()
 	unsigned long delayTime2 = roundf(sunriseDuration * 60 * 1000 * 0.2);
 
 	if (sunriseState == 4){ // Set sunrise transition
+		TurnOn();
 		ledstripSunrise->setAnimType(0);
 		ledstripSunrise->setValue(0, 0, 0, 0);
 		ledstripSunrise->colorTransition(255, 70, 0, 0, delayTime1);
