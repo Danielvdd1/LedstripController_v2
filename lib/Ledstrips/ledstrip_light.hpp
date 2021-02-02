@@ -15,6 +15,19 @@ class LedstripW;
 class LedstripRemote;
 
 
+class PSU{
+
+  public:
+    PSU(int pin);
+	String getInfo();
+	void setState(bool state);
+	bool getState();
+  
+  protected:
+    int pin;
+    bool state;
+};
+
 // class GPIO_Out{
 
 //   public:
@@ -187,7 +200,7 @@ class LedstripRemote: public Ledstrip{
 class Sunrise {
 
   public:
-    Sunrise(LedstripRGBW &ledstrip, NTPClient &timeClient, int sunriseTime, int sunriseDuration);
+    Sunrise(LedstripRGBW &ledstrip, NTPClient &timeClient, PSU &psu, int sunriseTime, int sunriseDuration);
 	String getInfo();
 	void setEnabled(bool sunriseEnabled);
 	bool getEnabled();
@@ -200,6 +213,7 @@ class Sunrise {
   protected:
 	LedstripRGBW &ledstrip;
     NTPClient &timeClient;
+    PSU &psu;
     bool sunriseEnabled = true;
     int sunriseTime; // Minutes // Not more than 1439 minutes
     int sunriseDuration; // Minutes // Not more than 59 minutes

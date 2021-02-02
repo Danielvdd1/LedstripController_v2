@@ -32,12 +32,8 @@ ESP8266WebServer server(80);
 #include "Webserver\PageColorPicker.hpp"
 #include "Webserver\PageSunrise.hpp"
 
-// Variables
-bool onoff = false;
-
 // IO
 const byte tempPin = A0;
-const byte PSUPin = D8;
 
 // ----- Ledstrips -----
 #include <Wire.h>
@@ -67,12 +63,15 @@ const byte amountButton = 3;
 bl::Button buttons[amountButton] = {bl::Button("Top button", D0), bl::Button("Middle button", D6), bl::Button("Bottom button", D7)};
 
 
+// ----- PSU -----
+ll::PSU psu = ll::PSU(D8);
+
 
 // ----- Sunrise -----
 const long utcOffsetInSeconds = 3600; // UTC +1.00 // Todo: Summer/winter time change
 WiFiUDP ntpUDP;
 NTPClient timeClient = NTPClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
-ll::Sunrise ledstripSunrise = ll::Sunrise(ledstripsRGBW[1], timeClient, 8 * 60 + 0, 15);
+ll::Sunrise ledstripSunrise = ll::Sunrise(ledstripsRGBW[1], timeClient, psu, 8 * 60 + 0, 15);
 
 
 
@@ -122,7 +121,6 @@ void SetupIO()
 	ResetColors();
 
 	//pinMode(tempPin, INPUT);
-	pinMode(PSUPin, OUTPUT);
 }
 void SetupWiFiManager()
 {
@@ -308,6 +306,10 @@ void HandleDebug()
 	text += "Sunrise:<br>";
 	text += ledstripSunrise.getInfo();
 	text += "<br>";
+	text += "<br>";
+	text += "PSU:<br>";
+	text += psu.getInfo();
+	text += "<br>";
 
 	server.send(200, "text/html", text);
 }
@@ -318,9 +320,9 @@ void HandleTest()
 	int valY = server.arg("y").toInt();
 	int valZ = server.arg("z").toInt();
 	String debugText = "x: " + String(valX) + ", y: " + String(valY) + ", z: " + String(valZ);
-	debugText += "<br>";
+	debugText += "<br><br>";
 
-	debugText += ledstripSunrise.getInfo();
+	//debugText += ;
 	
 	server.send(200, "text/html", debugText);
 }
@@ -336,13 +338,11 @@ void HandleOnOff()
 		TurnOnOff();
 	}
 
-	server.send(200, "text/plain", onoff ? "On" : "Off");
+	server.send(200, "text/plain", psu.getState() ? "On" : "Off");
 }
 
 void TurnOnOff() {
-	onoff = !onoff;
-
-	if (onoff)
+	if (!psu.getState())
 	{
 		TurnOn();
 	}
@@ -352,15 +352,13 @@ void TurnOnOff() {
 	}
 }
 void TurnOn() {
-	onoff = true;
-	digitalWrite(PSUPin, HIGH);
+	psu.setState(true);
 	//ledstripsRGBW[0].setValue(0,0,0,255);
 	ledstripsRGBW[0].colorTransition(0,0,0,255);
 }
 void TurnOff() {
-	onoff = false;
 	ResetColors();
-	digitalWrite(PSUPin, LOW);
+	psu.setState(false);
 }
 
 
@@ -377,7 +375,7 @@ void HandleRGBW()
 
 	if (valId >= 0 && valId < amountRGBW)
 	{
-		if (!onoff) TurnOn();
+		if (!psu.getState()) psu.setState(true);
 
 		if (valAT > 0 || valAS > 0){ // Something with animation
 			if (valAT > 0){
@@ -417,7 +415,7 @@ void HandleHSV()
 
 	if (valId >= 0 && valId < amountRGBW)
 	{
-		if (!onoff) TurnOn();
+		if (!psu.getState()) psu.setState(true);
 
 		ledstripsRGBW[valId].setValueHSV(valH, valS, valV);
 	}
@@ -440,7 +438,7 @@ void HandleW()
 
 	if (valId >= 0 && valId < amountW)
 	{
-		if (!onoff) TurnOn();
+		if (!psu.getState()) psu.setState(true);
 
 		ledstripsW[valId].setValue(valW);
 	}
@@ -535,7 +533,7 @@ void Buttons()
 	}
 	if (buttons[2].isPressed())
 	{ // Schuineluik
-		TurnOn();
+		psu.setState(true);
 		ledstripsW[0].turnOnOff();
 	}
 }

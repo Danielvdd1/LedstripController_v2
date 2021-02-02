@@ -1,13 +1,11 @@
 #include <Arduino.h> // Required for Visual Studio Code
-#include <WiFiUdp.h>
-#include <NTPClient.h>
 
 
 #include "ledstrip_light.hpp"
 
 namespace ledstripLights {
 
-Sunrise::Sunrise(LedstripRGBW &ledstrip, NTPClient &timeClient, int sunriseTime, int sunriseDuration): ledstrip(ledstrip), timeClient(timeClient), sunriseTime(sunriseTime), sunriseDuration(sunriseDuration)
+Sunrise::Sunrise(LedstripRGBW &ledstrip, NTPClient &timeClient, PSU &psu, int sunriseTime, int sunriseDuration): ledstrip(ledstrip), timeClient(timeClient), psu(psu), sunriseTime(sunriseTime), sunriseDuration(sunriseDuration)
 {
 }
 
@@ -96,6 +94,7 @@ void Sunrise::sunriseUpdate()
 	unsigned long delayTime2 = roundf(sunriseDuration * 60 * 1000 * 0.2);
 
 	if (sunriseState == 4){ // Set sunrise transition
+		psu.setState(true);
 		ledstrip.setAnimType(0);
 		ledstrip.setValue(0, 0, 0, 0);
 		ledstrip.colorTransition(255, 70, 0, 0, delayTime1);
