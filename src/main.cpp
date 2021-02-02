@@ -92,7 +92,6 @@ void HandleTest();
 void HandleOnOff();
 void TurnOnOff();
 void TurnOn();
-void TurnOn2();
 void TurnOff();
 
 void HandleRGBW();
@@ -345,7 +344,7 @@ void HandleOnOff()
 void TurnOnOff() {
 	if (!psu.getState())
 	{
-		TurnOn2();
+		TurnOn();
 	}
 	else
 	{
