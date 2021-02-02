@@ -10,7 +10,7 @@ Sunrise::Sunrise(LedstripRGBW &ledstrip, NTPClient &timeClient, PSU &psu, int su
 }
 
 String Sunrise::getInfo(){
-	String json = "{\"sunriseEnabled\": \"" + String(sunriseEnabled) + "\", \"sunriseTime\": " + String(sunriseTime) + ", \"sunriseDuration\": " + String(sunriseDuration) + ", \"sunriseState\": " + String(sunriseState) + "}";
+	String json = "{\"sunriseEnabled\": " + String(sunriseEnabled) + ", \"sunriseTime\": " + String(sunriseTime) + ", \"sunriseDuration\": " + String(sunriseDuration) + ", \"sunriseState\": " + String(sunriseState) + "}";
 	return json;
 }
 
