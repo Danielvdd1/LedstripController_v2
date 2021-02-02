@@ -22,6 +22,7 @@ var valW = 0;
 var endValue = document.getElementById('textRGBW');
 var valRGBW = "";
 
+var bgGradient = document.getElementById("bg");
 
 
 var xhttp0 = new XMLHttpRequest();
@@ -88,7 +89,7 @@ function Update() {
     valRGBW = '' + valR + ' ' + valG + ' ' + valB + ' ' + valW;
     endValue.innerHTML = valRGBW;
 
-    document.getElementById("bg").style.background = 'linear-gradient(to top, rgb(' + ((valR >= valW) ? valR : valW) + ',' + ((valG >= valW) ? valG : valW) + ',' + ((valB >= valW) ? valB : valW) + ') 0%, rgb(255, 255, 255) 40%)';
+    bgGradient.style.background = 'linear-gradient(to top, rgb(' + ((valR >= valW) ? valR : valW) + ',' + ((valG >= valW) ? valG : valW) + ',' + ((valB >= valW) ? valB : valW) + ') 0%, rgb(255, 255, 255) 40%)';
 }
 
 function SendRGBW() {

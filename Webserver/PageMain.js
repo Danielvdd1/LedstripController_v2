@@ -1,6 +1,7 @@
 var switch0 = document.getElementById('switch0');
 var switch1 = document.getElementById('switch1');
 
+var buttononoff = document.getElementById("buttononoff");
 
 // Request value rgbw
 var xhttp0 = new XMLHttpRequest();
@@ -89,7 +90,7 @@ xhttp2.send();
 var xhttp5 = new XMLHttpRequest();
 xhttp5.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
-        document.getElementById("buttononoff").value = this.responseText;
+        buttononoff.value = this.responseText;
     }
 };
 xhttp5.open('GET', '/onoff', true);
@@ -175,7 +176,7 @@ function SendOnOff() {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
-            document.getElementById("buttononoff").value = this.responseText;
+            buttononoff.value = this.responseText;
         }
     };
     xhttp.open('GET', '/onoff?s=1', true);
