@@ -1,4 +1,9 @@
 #include <Arduino.h> // Required for Visual Studio Code
+#include <Wire.h>
+#include <Adafruit_PWMServoDriver.h>
+#include <ESP8266HTTPClient.h> // Http request
+#include <WiFiUdp.h>
+#include <NTPClient.h>
 
 namespace ledstripLights {
 
@@ -9,6 +14,19 @@ class LedstripRGBW;
 class LedstripW;
 class LedstripRemote;
 
+
+class PSU{
+
+  public:
+    PSU(int pin);
+	String getInfo();
+	void setState(bool state);
+	bool getState();
+  
+  protected:
+    int pin;
+    bool state;
+};
 
 // class GPIO_Out{
 
@@ -175,6 +193,32 @@ class LedstripRemote: public Ledstrip{
     String urlOn;
 	String urlOff;
 	String sendRequest(String url);
+};
+
+
+
+class Sunrise {
+
+  public:
+    Sunrise(LedstripRGBW &ledstrip, NTPClient &timeClient, PSU &psu, int sunriseTime, int sunriseDuration);
+	String getInfo();
+	void setEnabled(bool sunriseEnabled);
+	bool getEnabled();
+	void setTime(int sunriseTime);
+	void setDuration(int sunriseDuration);
+	void reset();
+
+	void sunriseUpdate();
+  
+  protected:
+	LedstripRGBW &ledstrip;
+    NTPClient &timeClient;
+    PSU &psu;
+    bool sunriseEnabled = true;
+    int sunriseTime; // Minutes // Not more than 1439 minutes
+    int sunriseDuration; // Minutes // Not more than 59 minutes
+    int sunriseState = 0;
+	unsigned long interval;
 };
 
 }
