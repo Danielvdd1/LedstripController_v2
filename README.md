@@ -1,13 +1,13 @@
 # LedstripController
 
 ## TO DO:
-- [x] On/off button PSU&ledstrip, lamp1 and schuineluik
+- [x] Buttons
 - [x] OTA sketch uploading
-- [x] Disco
 - [x] Captive portal when no known network is found
+- [x] Color animation
 - [ ] Fade before turning off
 - [ ] Live updating values/states
-- [ ] Measure temperature
+- [ ] Temperature sensor
 - [ ] Ir remote (programable via menu or buttons)
 - [ ] ?Get data online (dashboard)
 - [ ] Dim lights slowly as a sleep timer
