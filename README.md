@@ -13,4 +13,4 @@
 - [ ] Dim lights slowly as a sleep timer
 - [ ] Brightness depending on the time
 - [ ] Combine with alarm clock (Google assistant)
-- [ ] Wake person with fake sunrise (red from sunrise to give a good mood if you need to wake up early)
+- [x] Wake person with fake sunrise (red from sunrise to give a good mood if you need to wake up early)
