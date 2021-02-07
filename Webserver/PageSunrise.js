@@ -29,8 +29,8 @@ switch0.addEventListener('click', function () {
 
 
 function SendSunrise(valE) {
-    console.log('Send: /sendsunrise?e=' + (valE ? '1' : '2'));
+    console.log('Send: /sendsunrise?e=' + (valE ? '2' : '1'));
     var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', '/sendsunrise?e=' + (valE ? '1' : '2'), true);
+    xhttp.open('GET', '/sendsunrise?e=' + (valE ? '2' : '1'), true);
     xhttp.send();
 }
