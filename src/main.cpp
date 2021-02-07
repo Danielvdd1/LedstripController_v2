@@ -465,9 +465,9 @@ void ResetColors()
 void HandleSunrise()
 {
 	// /sendsunrise?e=___&t=___
-	byte valE = server.arg("e").toInt();
-	byte valT = server.arg("t").toInt();
-	byte valD = server.arg("d").toInt();
+	int valE = server.arg("e").toInt();
+	int valT = server.arg("t").toInt();
+	int valD = server.arg("d").toInt();
 
 	if (valE > 0){
 		valE = max(valE-1, 0);
@@ -493,7 +493,7 @@ void HandleSunrise()
 		ledstripSunrise.setDuration(valD);
 	}
 
-	server.send(200, "text/json", ledstripSunrise.getEnabled() ? "1" : "0");
+	server.send(200, "text/json", ledstripSunrise.getInfo());
 }
 
 
