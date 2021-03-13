@@ -23,14 +23,26 @@ const char* pageSunrise_html PROGMEM = R"=====(
 <body>
   <div id="bg"></div>
   <h1>Ledstrip controller</h1>
-  <div class='wrapper'>
-    <div class='first'>
-		<p>Enable sunrise</p>
-		<label class="switch">
-		  <input id="switch0" type="checkbox">
-		  <span class="slider"></span>
-		</label>
-    </div>
+  <h2>Sunrise</h2>
+  <div>
+    <label for="inputSunriseEnabled">Enable sunrise:</label>
+    <input type="checkbox" id="inputSunriseEnabled" name="inputSunriseEnabled">
+  </div>
+  <div>
+    <label for="inputSunriseTime">Sunrise time (in munutes):</label>
+    <input type="text" id="inputSunriseTime" name="inputSunriseTime">
+    <input type="button" id="buttonSunriseTime" value="Send">
+  </div>
+  <div>
+    <label for="inputSunriseDuration">Sunrise duration (in munutes, 1 hour max):</label>
+    <input type="text" id="inputSunriseDuration" name="inputSunriseDuration">
+    <input type="button" id="buttonSunriseDuration" value="Send">
+  </div>
+  <div>
+    <h3>Example</h3>
+    <p>Set the sunrise time in minutes. If you want the sunrise to end at 8 am, multiple 8 with 60. This makes 480 minutes.</p>
+    <p>Set the sunrise duration in minutes. The maximum duration is 59 minutes.</p>
+    <p>If input value is higher than allowed. It will be rounded down.</p>
   </div>
   <script src="PageSunrise.js"></script>
 </body>
@@ -38,9 +50,7 @@ const char* pageSunrise_html PROGMEM = R"=====(
 )=====";
 
 const char* pageSunrise_css PROGMEM = R"=====(
-p,
-h1,
-input {
+body {
     font-family: 'Roboto', Times, serif;
 }
 
@@ -163,10 +173,14 @@ input:checked+.slider:before {
 )=====";
 
 const char* pageSunrise_js PROGMEM = R"=====(
-var switch0 = document.getElementById('switch0');
+var switch0 = document.getElementById('inputSunriseEnabled');
+var text1 = document.getElementById('inputSunriseTime');
+var text2 = document.getElementById('inputSunriseDuration');
+var button1 = document.getElementById('buttonSunriseTime');
+var button2 = document.getElementById('buttonSunriseDuration');
 
 
-// Request value e
+// Request sunrise values
 var xhttp0 = new XMLHttpRequest();
 xhttp0.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
@@ -178,9 +192,11 @@ xhttp0.onreadystatechange = function () {
         //valS = jsonObject.sunriseState;
 
         switch0.checked = (valE === 0 ? false : true);
+        text1.value = valT;
+        text2.value = valD;
     }
     else if (this.readyState == 4) {
-        console.log("E: offline");
+        console.log("Offline");
     }
 };
 xhttp0.open('GET', '/sendsunrise', true);
@@ -188,30 +204,43 @@ xhttp0.send();
 
 
 
-// Switch events
+// Switch event
 switch0.addEventListener('click', function () {
     SendSunriseEnabled(switch0.checked);
 });
 
+// Button events
+button1.addEventListener('click', function () {
+    var val = parseInt(text1.value);
+    SendSunriseTime(val);
+});
+button2.addEventListener('click', function () {
+    var val = parseInt(text2.value);
+    SendSunriseDuration(val);
+});
+
 
 function SendSunriseEnabled(valE) {
-    console.log('Send: /sendsunrise?e=' + (valE ? '2' : '1'));
+    tvalE = (valE ? '2' : '1');
+    console.log('Send: /sendsunrise?e=' + tvalE);
     var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', '/sendsunrise?e=' + (valE ? '2' : '1'), true);
+    xhttp.open('GET', '/sendsunrise?e=' + tvalE, true);
     xhttp.send();
 }
 
 function SendSunriseTime(valT) {
-    console.log('Send: /sendsunrise?t=' + valT);
+    tvalT = valT + 1;
+    console.log('Send: /sendsunrise?t=' + tvalT);
     var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', '/sendsunrise?t=' + valT, true);
+    xhttp.open('GET', '/sendsunrise?t=' + tvalT, true);
     xhttp.send();
 }
 
 function SendSunriseDuration(valD) {
-    console.log('Send: /sendsunrise?d=' + valD);
+    tvalD = valD + 1;
+    console.log('Send: /sendsunrise?d=' + tvalD);
     var xhttp = new XMLHttpRequest();
-    xhttp.open('GET', '/sendsunrise?d=' + valD, true);
+    xhttp.open('GET', '/sendsunrise?d=' + tvalD, true);
     xhttp.send();
 }
 )=====";
