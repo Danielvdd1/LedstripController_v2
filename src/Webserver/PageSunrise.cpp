@@ -42,7 +42,7 @@ const char* pageSunrise_html PROGMEM = R"=====(
     <h3>Example</h3>
     <p>Set the sunrise time in minutes. If you want the sunrise to end at 8 am, multiply 8 with 60. This makes 480 minutes.</p>
     <p>Set the sunrise duration in minutes. The maximum duration is 59 minutes. This is the time it will take to fade the colors to daylight.</p>
-    <p>If input value is higher than allowed. It will be rounded down.</p>
+    <p>If the input value is higher than allowed. It will be rounded down.</p>
   </div>
   <script src="PageSunrise.js"></script>
 </body>
