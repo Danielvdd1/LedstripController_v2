@@ -200,7 +200,8 @@ class LedstripRemote: public Ledstrip{
 class Sunrise {
 
   public:
-    Sunrise(LedstripRGBW &ledstrip, NTPClient &timeClient, PSU &psu, int sunriseTime, int sunriseDuration);
+  	Sunrise(LedstripRGBW &ledstrip, NTPClient &timeClient, PSU &psu);
+    Sunrise(LedstripRGBW &ledstrip, NTPClient &timeClient, PSU &psu, bool sunriseEnabled, int sunriseTime, int sunriseDuration);
 	String getInfo();
 	void setEnabled(bool sunriseEnabled);
 	bool getEnabled();
@@ -214,9 +215,9 @@ class Sunrise {
 	LedstripRGBW &ledstrip;
     NTPClient &timeClient;
     PSU &psu;
-    bool sunriseEnabled = true;
-    int sunriseTime; // Minutes // Not more than 1439 minutes
-    int sunriseDuration; // Minutes // Not more than 59 minutes
+    bool sunriseEnabled = false;
+    int sunriseTime = 0; // Minutes // Not more than 1439 minutes
+    int sunriseDuration = 0; // Minutes // Not more than 59 minutes
     int sunriseState = 0;
 	unsigned long interval;
 };

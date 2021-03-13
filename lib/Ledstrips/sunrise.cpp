@@ -5,7 +5,10 @@
 
 namespace ledstripLights {
 
-Sunrise::Sunrise(LedstripRGBW &ledstrip, NTPClient &timeClient, PSU &psu, int sunriseTime, int sunriseDuration): ledstrip(ledstrip), timeClient(timeClient), psu(psu), sunriseTime(sunriseTime), sunriseDuration(sunriseDuration)
+Sunrise::Sunrise(LedstripRGBW &ledstrip, NTPClient &timeClient, PSU &psu): ledstrip(ledstrip), timeClient(timeClient), psu(psu)
+{
+}
+Sunrise::Sunrise(LedstripRGBW &ledstrip, NTPClient &timeClient, PSU &psu, bool sunriseEnabled, int sunriseTime, int sunriseDuration): ledstrip(ledstrip), timeClient(timeClient), psu(psu), sunriseEnabled(sunriseEnabled), sunriseTime(sunriseTime), sunriseDuration(sunriseDuration)
 {
 }
 

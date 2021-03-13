@@ -71,7 +71,7 @@ ll::PSU psu = ll::PSU(D8);
 const long utcOffsetInSeconds = 3600; // UTC +1.00 // Todo: Summer/winter time change
 WiFiUDP ntpUDP;
 NTPClient timeClient = NTPClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
-ll::Sunrise ledstripSunrise = ll::Sunrise(ledstripsRGBW[1], timeClient, psu, 8 * 60 + 0, 15);
+ll::Sunrise ledstripSunrise = ll::Sunrise(ledstripsRGBW[1], timeClient, psu, false, 8 * 60 + 0, 15);
 
 
 
