@@ -97,11 +97,13 @@ String LedstripRGBW::getInfo(){
 }
 
 void LedstripRGBW::turnOn(){
-  	setValue(255, 255, 255, 255);
+	setValue(255, 255, 255, 255);
 }
 
 void LedstripRGBW::turnOff(){
-  	setValue(0, 0, 0, 0);
+	setValue(0, 0, 0, 0);
+	transition = false;
+	setAnimType(0);
 }
 
 void LedstripRGBW::setValue(int valR, int valG, int valB, int valW){

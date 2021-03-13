@@ -32,12 +32,8 @@ ESP8266WebServer server(80);
 #include "Webserver\PageColorPicker.hpp"
 #include "Webserver\PageSunrise.hpp"
 
-// Variables
-bool onoff = false;
-
 // IO
 const byte tempPin = A0;
-const byte PSUPin = D8;
 
 // ----- Ledstrips -----
 #include <Wire.h>
@@ -67,19 +63,15 @@ const byte amountButton = 3;
 bl::Button buttons[amountButton] = {bl::Button("Top button", D0), bl::Button("Middle button", D6), bl::Button("Bottom button", D7)};
 
 
+// ----- PSU -----
+ll::PSU psu = ll::PSU(D8);
 
-/*
+
 // ----- Sunrise -----
-const long utcOffsetInSeconds = 3600; // UTC +1.00
+const long utcOffsetInSeconds = 3600; // UTC +1.00 // Todo: Summer/winter time change
 WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
-bool sunriseEnabled = true;
-int sunriseState = 0;
-int sunriseTime = 8 * 60 + 0; // Minutes
-const int sunriseDuration = 15; // Minutes // Not more than 59 minutes
-unsigned long previousMillis = 0;
-unsigned long  interval = 1000;
-*/
+NTPClient timeClient = NTPClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
+ll::Sunrise ledstripSunrise = ll::Sunrise(ledstripsRGBW[1], timeClient, psu, 8 * 60 + 0, 15);
 
 
 
@@ -107,12 +99,7 @@ void HandleHSV();
 void HandleW();
 void ResetColors();
 
-/*
 void HandleSunrise();
-
-void Sunrise();
-void SunriseTransition(bool firstTime);
-*/
 
 void HandleOTA();
 void OTA();
@@ -134,7 +121,6 @@ void SetupIO()
 	ResetColors();
 
 	//pinMode(tempPin, INPUT);
-	pinMode(PSUPin, OUTPUT);
 }
 void SetupWiFiManager()
 {
@@ -189,11 +175,11 @@ void SetupServer()
 	server.on("/colorpicker", HandlePageColorPickerHTML);
 	server.on("/PageColorPicker.css", HandlePageColorPickerCSS);
 	server.on("/PageColorPicker.js", HandlePageColorPickerJS);
-	/*
+	
 	server.on("/sunrise", HandlePageSunriseHTML);
 	server.on("/PageSunrise.css", HandlePageSunriseCSS);
 	server.on("/PageSunrise.js", HandlePageSunriseJS);
-	*/
+	
 
 	server.on("/debug", HandleDebug);
 	server.on("/test", HandleTest);
@@ -202,7 +188,7 @@ void SetupServer()
 	server.on("/sendrgbw", HandleRGBW);
 	server.on("/sendhsv", HandleHSV);
 	server.on("/sendw", HandleW);
-	//server.on("/sendsunrise", HandleSunrise);
+	server.on("/sendsunrise", HandleSunrise);
 
 	server.on("/ota", HandleOTA);
 
@@ -215,7 +201,8 @@ void setup()
 	SetupOTA();
 	SetupServer();
 	
-	//timeClient.begin();
+	// Time for sunrise
+	timeClient.begin();
 }
 
 void loop()
@@ -230,9 +217,7 @@ void loop()
 		ledstrip.animate();
 	}
 
-
-	// Sunrise();
-	
+	ledstripSunrise.sunriseUpdate();
 }
 
 
@@ -280,7 +265,6 @@ void HandlePageColorPickerJS()
 	server.send(200, "text/js", js);
 }
 
-/*
 void HandlePageSunriseHTML()
 {
 	// /sunrise
@@ -298,7 +282,7 @@ void HandlePageSunriseJS()
 	String js = String(pageSunrise_js);
 	server.send(200, "text/js", js);
 }
-*/
+
 
 void HandleDebug()
 {
@@ -318,6 +302,14 @@ void HandleDebug()
 		text += button.getInfo();
 		text += "<br>";
 	}
+	text += "<br>";
+	text += "Sunrise:<br>";
+	text += ledstripSunrise.getInfo();
+	text += "<br>";
+	text += "<br>";
+	text += "PSU:<br>";
+	text += psu.getInfo();
+	text += "<br>";
 
 	server.send(200, "text/html", text);
 }
@@ -328,12 +320,9 @@ void HandleTest()
 	int valY = server.arg("y").toInt();
 	int valZ = server.arg("z").toInt();
 	String debugText = "x: " + String(valX) + ", y: " + String(valY) + ", z: " + String(valZ);
-	//debugText += "<br>";
+	debugText += "<br><br>";
 
-	
-	//ledstripsRGBW[0].colorTransition(255, 200, 0, 200, 6000);
-
-	ledstripsRGBW[0].setValueHSV(valX, valY, valZ);
+	//debugText += ;
 	
 	server.send(200, "text/html", debugText);
 }
@@ -349,13 +338,11 @@ void HandleOnOff()
 		TurnOnOff();
 	}
 
-	server.send(200, "text/plain", onoff ? "On" : "Off");
+	server.send(200, "text/plain", psu.getState() ? "On" : "Off");
 }
 
 void TurnOnOff() {
-	onoff = !onoff;
-
-	if (onoff)
+	if (!psu.getState())
 	{
 		TurnOn();
 	}
@@ -365,15 +352,13 @@ void TurnOnOff() {
 	}
 }
 void TurnOn() {
-	onoff = true;
-	digitalWrite(PSUPin, HIGH);
+	psu.setState(true);
 	//ledstripsRGBW[0].setValue(0,0,0,255);
 	ledstripsRGBW[0].colorTransition(0,0,0,255);
 }
 void TurnOff() {
-	onoff = false;
-	digitalWrite(PSUPin, LOW);
 	ResetColors();
+	psu.setState(false);
 }
 
 
@@ -390,7 +375,7 @@ void HandleRGBW()
 
 	if (valId >= 0 && valId < amountRGBW)
 	{
-		if (!onoff) TurnOn();
+		if (!psu.getState()) psu.setState(true);
 
 		if (valAT > 0 || valAS > 0){ // Something with animation
 			if (valAT > 0){
@@ -430,7 +415,7 @@ void HandleHSV()
 
 	if (valId >= 0 && valId < amountRGBW)
 	{
-		if (!onoff) TurnOn();
+		if (!psu.getState()) psu.setState(true);
 
 		ledstripsRGBW[valId].setValueHSV(valH, valS, valV);
 	}
@@ -453,7 +438,7 @@ void HandleW()
 
 	if (valId >= 0 && valId < amountW)
 	{
-		if (!onoff) TurnOn();
+		if (!psu.getState()) psu.setState(true);
 
 		ledstripsW[valId].setValue(valW);
 	}
@@ -476,173 +461,41 @@ void ResetColors()
 	}
 }
 
-/*
+
 void HandleSunrise()
 {
 	// /sendsunrise?e=___&t=___
-	byte valE = server.arg("e").toInt();
-	//byte valT = server.arg("t").toInt();
+	int valE = server.arg("e").toInt();
+	int valT = server.arg("t").toInt();
+	int valD = server.arg("d").toInt();
 
-	if (valE == 1){
-		sunriseEnabled = true;
-	}
-	else if (valE == 2) {
-		sunriseEnabled = false;
-		sunriseState = 0;
-	}
-
-	server.send(200, "text/json", sunriseEnabled ? "1" : "0");
-}
-void Sunrise()
-{
-	if (!sunriseEnabled){
-		return;
-	}
-
-	unsigned long currentMillis = millis();
-
-	if (sunriseState == 0){ // Calculate hours to wait
-		timeClient.update();
-
-		int time = timeClient.getHours() * 60 + timeClient.getMinutes();
-
-		if (time < sunriseTime-60){
-			interval = ((sunriseTime-60) - time) * 60 * 1000;
+	if (valE > 0){
+		valE = max(valE-1, 0);
+		if (valE > 0){
+			ledstripSunrise.setEnabled(true);
+		} else {
+			ledstripSunrise.setEnabled(false);
+			ledstripSunrise.reset();
 		}
-		else{
-			interval = ((sunriseTime-60) + (24*60 - time)) * 60 * 1000;
-		}
+	}
+
+	if (valT > 0){
+		valT = min(max(valT-1, 0), 24 * 60 - 1); // Minutes
 		
-		sunriseState = 1;
+		// Set time variable
+		ledstripSunrise.setTime(valT);
 	}
 
-	if (sunriseState == 1){ // Wait hours
-		if (currentMillis - previousMillis >= interval) {
-			previousMillis = currentMillis;
-
-			sunriseState = 2;
-		}
+	if (valD > 0){
+		valD = min(max(valD-1, 0), 60 - 1); // Minutes
+		
+		// Set duration variable
+		ledstripSunrise.setDuration(valD);
 	}
 
-	if (sunriseState == 2){ // Calculate minutes to wait
-		timeClient.update();
-
-		int time = timeClient.getHours() * 60 + timeClient.getMinutes();
-
-		if (time < sunriseTime-sunriseDuration){
-			interval = ((sunriseTime-sunriseDuration) - time) * 60 * 1000;
-		}
-		else{
-			//Error?
-			sunriseState = 0;
-		}
-
-		sunriseState = 3;
-	}
-
-	if (sunriseState == 3){ // Wait minutes
-		if (currentMillis - previousMillis >= interval) {
-			previousMillis = currentMillis;
-
-			sunriseState = 4;
-		}
-	}
-
-	if (sunriseState == 4){ // Set sunrise transition
-		SunriseTransition(true);
-		sunriseState = 5;
-	}
-
-	if (sunriseState == 5 || sunriseState == 6){ // Do sunrise transition
-		SunriseTransition(false);
-	}
-	// 5 -> 6 in SunriseTransition function
-	
-	if (sunriseState == 7){ // Calculate safety delay to avoid double sunrise
-		interval = 3600 * 1000;
-
-		sunriseState = 8;
-	}
-
-	if (sunriseState == 8){ // Wait safety delay
-		if (currentMillis - previousMillis >= interval) {
-			previousMillis = currentMillis;
-
-			sunriseState = 0;
-		}
-	}
+	server.send(200, "text/json", ledstripSunrise.getInfo());
 }
-void SunriseTransition(bool firstTime)
-{
-	const unsigned long delayTime1 = roundf(sunriseDuration * 60 * 1000 * 0.8);
-	const unsigned long delayTime2 = roundf(sunriseDuration * 60 * 1000 * 0.2);
-	static unsigned long startTime;
 
-	static byte oldValueRGBW[4];
-
-	if (firstTime)
-	{
-		animActive = 0; // Turn off animation
-		if (!onoff) TurnOn();
-
-		newValueRGBW[1][0] = 255;
-		newValueRGBW[1][1] = 70;
-		newValueRGBW[1][2] = 0;
-		newValueRGBW[1][3] = 0;
-
-		startTime = millis();
-		oldValueRGBW[0] = valueRGBW[1][0];
-		oldValueRGBW[1] = valueRGBW[1][1];
-		oldValueRGBW[2] = valueRGBW[1][2];
-		oldValueRGBW[3] = valueRGBW[1][3];
-	}
-
-	unsigned long timeDifference = millis() - startTime;
-
-	if (sunriseState == 5){
-		if (timeDifference < delayTime1)
-		{
-			valueRGBW[1][0] = map(timeDifference, 0, delayTime1, oldValueRGBW[0], newValueRGBW[1][0]);
-			valueRGBW[1][1] = map(timeDifference, 0, delayTime1, oldValueRGBW[1], newValueRGBW[1][1]);
-			valueRGBW[1][2] = map(timeDifference, 0, delayTime1, oldValueRGBW[2], newValueRGBW[1][2]);
-			valueRGBW[1][3] = map(timeDifference, 0, delayTime1, oldValueRGBW[3], newValueRGBW[1][3]);
-		}
-
-		if (timeDifference >= delayTime1)
-		{
-			sunriseState = 6;
-			timeDifference = 0;
-
-			newValueRGBW[1][0] = 200;
-			newValueRGBW[1][1] = 70;
-			newValueRGBW[1][2] = 0;
-			newValueRGBW[1][3] = 255;
-
-			startTime = millis();
-			oldValueRGBW[0] = valueRGBW[1][0];
-			oldValueRGBW[1] = valueRGBW[1][1];
-			oldValueRGBW[2] = valueRGBW[1][2];
-			oldValueRGBW[3] = valueRGBW[1][3];
-		}
-	}
-	
-	if (sunriseState == 6){
-		if (timeDifference < delayTime2)
-		{
-			valueRGBW[1][0] = map(timeDifference, 0, delayTime2, oldValueRGBW[0], newValueRGBW[1][0]);
-			valueRGBW[1][1] = map(timeDifference, 0, delayTime2, oldValueRGBW[1], newValueRGBW[1][1]);
-			valueRGBW[1][2] = map(timeDifference, 0, delayTime2, oldValueRGBW[2], newValueRGBW[1][2]);
-			valueRGBW[1][3] = map(timeDifference, 0, delayTime2, oldValueRGBW[3], newValueRGBW[1][3]);
-		}
-		if (timeDifference >= delayTime2)
-		{
-			sunriseState = 7;
-		}
-	}
-
-	SetColors(1);
-}
-*/
 
 void HandleOTA()
 {
@@ -680,7 +533,7 @@ void Buttons()
 	}
 	if (buttons[2].isPressed())
 	{ // Schuineluik
-		TurnOn();
+		psu.setState(true);
 		ledstripsW[0].turnOnOff();
 	}
 }
